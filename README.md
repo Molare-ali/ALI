@@ -1,6 +1,6 @@
 # Molare Commerce
 
-Luxury men’s fashion e-commerce demo built with Next.js, TypeScript, Tailwind CSS, and a JSON-backed demo data layer.
+Luxury men's fashion e-commerce demo built with Next.js, TypeScript, Tailwind CSS, and a JSON-backed demo data layer.
 
 ## Local Development
 
@@ -29,4 +29,3 @@ The easiest free deployment path is GitHub + Vercel:
    - Install command: `npm install`
 
 Note: The included JSON data layer is for demo hosting. On Vercel, writes use temporary storage and may reset. For a production store, connect a hosted database such as Supabase or Neon.
-

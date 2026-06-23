@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Molarè logo">
+  <rect width="240" height="240" fill="#F5F1EA"/>
+  <path d="M50 178h140" stroke="#4A2E5E" stroke-width="6" stroke-linecap="square"/>
+  <path d="M112 178h16l-8 9z" fill="#4A2E5E"/>
+  <path d="M62 147V60h28l31 58 31-58h26v87h-22V92l-29 55h-14L84 92v55z" fill="#1A1A1A"/>
+  <path d="M86 147V94l29 53z" fill="#4A2E5E" opacity=".92"/>
+  <circle cx="190" cy="88" r="5" fill="none" stroke="#4A2E5E" stroke-width="4"/>
+  <path d="M194 92l20 20" stroke="#4A2E5E" stroke-width="4" stroke-linecap="round"/>
+  <path d="M80 199h80" stroke="#C9A961" stroke-width="3"/>
+</svg>

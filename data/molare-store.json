@@ -1,0 +1,343 @@
+{
+  "categories": [
+    {
+      "id": "cat-suiting",
+      "name": "Suiting",
+      "slug": "suiting",
+      "description": "Tailored jackets, trousers, and ceremonial separates."
+    },
+    {
+      "id": "cat-shirts",
+      "name": "Shirts",
+      "slug": "shirts",
+      "description": "Crisp cotton and evening shirts cut with Italian restraint."
+    },
+    {
+      "id": "cat-outerwear",
+      "name": "Outerwear",
+      "slug": "outerwear",
+      "description": "Layering pieces with quiet structure and warm movement."
+    },
+    {
+      "id": "cat-accessories",
+      "name": "Accessories",
+      "slug": "accessories",
+      "description": "Finishing details in silk, leather, and brushed metal."
+    }
+  ],
+  "products": [
+    {
+      "id": "prod-roma-suit",
+      "name": "Roma Sartorial Suit",
+      "slug": "roma-sartorial-suit",
+      "description": "A modern two-piece suit cut for a clean shoulder, narrow waist, and composed evening presence.",
+      "price": 720,
+      "discountPrice": 650,
+      "categoryId": "cat-suiting",
+      "variants": [
+        {
+          "id": "var-roma-onyx",
+          "colorName": "Onyx Black",
+          "colorHex": "#1A1A1A",
+          "images": [
+            "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=1200&q=85",
+            "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=85"
+          ],
+          "sizes": [
+            "46",
+            "48",
+            "50",
+            "52",
+            "54"
+          ],
+          "stock": 16,
+          "sku": "MOL-SUIT-ONX",
+          "active": true
+        },
+        {
+          "id": "var-roma-aubergine",
+          "colorName": "Aubergine",
+          "colorHex": "#2D1B3D",
+          "images": [
+            "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=85",
+            "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=1200&q=85"
+          ],
+          "sizes": [
+            "46",
+            "48",
+            "50",
+            "52"
+          ],
+          "stock": 10,
+          "sku": "MOL-SUIT-AUB",
+          "priceOverride": 690,
+          "active": true
+        }
+      ],
+      "featured": true,
+      "active": true
+    },
+    {
+      "id": "prod-milano-shirt",
+      "name": "Milano Poplin Shirt",
+      "slug": "milano-poplin-shirt",
+      "description": "A tailored men’s poplin shirt with a precise collar, clean cuff, and smooth everyday polish.",
+      "price": 155,
+      "categoryId": "cat-shirts",
+      "variants": [
+        {
+          "id": "var-milano-avorio",
+          "colorName": "Avorio",
+          "colorHex": "#F5F1EA",
+          "images": [
+            "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=1200&q=85",
+            "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=1200&q=85"
+          ],
+          "sizes": [
+            "S",
+            "M",
+            "L",
+            "XL",
+            "XXL"
+          ],
+          "stock": 32,
+          "sku": "MOL-SHIRT-AVO",
+          "active": true
+        },
+        {
+          "id": "var-milano-blue",
+          "colorName": "Pale Blue",
+          "colorHex": "#B9C8D8",
+          "images": [
+            "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=1200&q=85",
+            "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=1200&q=85"
+          ],
+          "sizes": [
+            "S",
+            "M",
+            "L",
+            "XL"
+          ],
+          "stock": 18,
+          "sku": "MOL-SHIRT-BLU",
+          "active": true
+        }
+      ],
+      "featured": true,
+      "active": true
+    },
+    {
+      "id": "prod-verona-coat",
+      "name": "Verona Wool Coat",
+      "slug": "verona-wool-coat",
+      "description": "A long men’s wool coat with quiet structure, refined drape, and a clean winter silhouette.",
+      "price": 690,
+      "categoryId": "cat-outerwear",
+      "variants": [
+        {
+          "id": "var-verona-onyx",
+          "colorName": "Onyx Black",
+          "colorHex": "#1A1A1A",
+          "images": [
+            "https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=1200&q=85",
+            "https://images.unsplash.com/photo-1516257984-b1b4d707412e?auto=format&fit=crop&w=1200&q=85"
+          ],
+          "sizes": [
+            "S",
+            "M",
+            "L",
+            "XL"
+          ],
+          "stock": 14,
+          "sku": "MOL-COAT-ONX",
+          "active": true
+        },
+        {
+          "id": "var-verona-plum",
+          "colorName": "Plum Royal",
+          "colorHex": "#4A2E5E",
+          "images": [
+            "https://images.unsplash.com/photo-1516257984-b1b4d707412e?auto=format&fit=crop&w=1200&q=85",
+            "https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=1200&q=85"
+          ],
+          "sizes": [
+            "S",
+            "M",
+            "L"
+          ],
+          "stock": 8,
+          "sku": "MOL-COAT-PLM",
+          "priceOverride": 720,
+          "active": true
+        }
+      ],
+      "featured": true,
+      "active": true
+    },
+    {
+      "id": "prod-firenze-tee",
+      "name": "Firenze Mercerized T-Shirt",
+      "slug": "firenze-mercerized-t-shirt",
+      "description": "A premium men’s T-shirt in smooth mercerized cotton jersey with a refined neck line.",
+      "price": 95,
+      "categoryId": "cat-shirts",
+      "variants": [
+        {
+          "id": "var-firenze-onyx",
+          "colorName": "Onyx Black",
+          "colorHex": "#1A1A1A",
+          "images": [
+            "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1200&q=85",
+            "https://images.unsplash.com/photo-1503341504253-dff4815485f1?auto=format&fit=crop&w=1200&q=85"
+          ],
+          "sizes": [
+            "S",
+            "M",
+            "L",
+            "XL"
+          ],
+          "stock": 40,
+          "sku": "MOL-TEE-ONX",
+          "active": true
+        },
+        {
+          "id": "var-firenze-avorio",
+          "colorName": "Avorio",
+          "colorHex": "#F5F1EA",
+          "images": [
+            "https://images.unsplash.com/photo-1503341504253-dff4815485f1?auto=format&fit=crop&w=1200&q=85",
+            "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1200&q=85"
+          ],
+          "sizes": [
+            "S",
+            "M",
+            "L",
+            "XL"
+          ],
+          "stock": 26,
+          "sku": "MOL-TEE-AVO",
+          "active": true
+        }
+      ],
+      "featured": false,
+      "active": true
+    },
+    {
+      "id": "prod-torino-trouser",
+      "name": "Torino Tailored Trouser",
+      "slug": "torino-tailored-trouser",
+      "description": "A tapered men’s trouser with a pressed front, clean waistband, and polished daily movement.",
+      "price": 180,
+      "categoryId": "cat-suiting",
+      "variants": [
+        {
+          "id": "var-torino-charcoal",
+          "colorName": "Charcoal",
+          "colorHex": "#333333",
+          "images": [
+            "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?auto=format&fit=crop&w=1200&q=85",
+            "https://images.unsplash.com/photo-1516826957135-700dedea698c?auto=format&fit=crop&w=1200&q=85"
+          ],
+          "sizes": [
+            "30",
+            "32",
+            "34",
+            "36",
+            "38"
+          ],
+          "stock": 24,
+          "sku": "MOL-TRS-CHR",
+          "active": true
+        },
+        {
+          "id": "var-torino-aubergine",
+          "colorName": "Aubergine",
+          "colorHex": "#2D1B3D",
+          "images": [
+            "https://images.unsplash.com/photo-1516826957135-700dedea698c?auto=format&fit=crop&w=1200&q=85",
+            "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?auto=format&fit=crop&w=1200&q=85"
+          ],
+          "sizes": [
+            "30",
+            "32",
+            "34",
+            "36"
+          ],
+          "stock": 12,
+          "sku": "MOL-TRS-AUB",
+          "active": true
+        }
+      ],
+      "featured": false,
+      "active": true
+    },
+    {
+      "id": "prod-napoli-polo",
+      "name": "Napoli Knit Polo",
+      "slug": "napoli-knit-polo",
+      "description": "A soft knit men’s polo with a structured collar and subtle luxury weight.",
+      "price": 135,
+      "categoryId": "cat-accessories",
+      "variants": [
+        {
+          "id": "var-napoli-champagne",
+          "colorName": "Champagne",
+          "colorHex": "#C9A961",
+          "images": [
+            "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?auto=format&fit=crop&w=1200&q=85",
+            "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?auto=format&fit=crop&w=1200&q=85"
+          ],
+          "sizes": [
+            "S",
+            "M",
+            "L",
+            "XL"
+          ],
+          "stock": 22,
+          "sku": "MOL-POLO-CHM",
+          "active": true
+        },
+        {
+          "id": "var-napoli-plum",
+          "colorName": "Plum Royal",
+          "colorHex": "#4A2E5E",
+          "images": [
+            "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?auto=format&fit=crop&w=1200&q=85",
+            "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?auto=format&fit=crop&w=1200&q=85"
+          ],
+          "sizes": [
+            "M",
+            "L",
+            "XL"
+          ],
+          "stock": 11,
+          "sku": "MOL-POLO-PLM",
+          "active": true
+        }
+      ],
+      "featured": false,
+      "active": true
+    }
+  ],
+  "users": [
+    {
+      "id": "admin-1",
+      "fullName": "Molarè Admin",
+      "email": "admin@molare.test",
+      "phone": "+963000000000",
+      "role": "admin",
+      "password": "admin123"
+    }
+  ],
+  "orders": [],
+  "settings": {
+    "whatsappNumber": "963000000000",
+    "contactPhone": "+963 000 000 000",
+    "contactEmail": "atelier@molare.test",
+    "storeAddress": "Molarè Atelier, Damascus",
+    "instagramLink": "",
+    "facebookLink": "",
+    "tiktokLink": "",
+    "snapchatLink": ""
+  }
+}

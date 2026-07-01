@@ -1,3 +1,4 @@
+
 # Molare Commerce
 
 Luxury men's fashion e-commerce demo built with Next.js, TypeScript, Tailwind CSS, and a JSON-backed demo data layer.

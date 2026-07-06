@@ -9,12 +9,17 @@ import { Button } from "@/components/Button";
 import { Input, TextArea } from "@/components/Input";
 import { Skeleton } from "@/components/Skeleton";
 import { safeFetchJson } from "@/lib/api-client";
+import { normalizeProductPayload } from "@/lib/product-validation";
 import type { Category, Product, ProductVariant } from "@/lib/types";
 import { getProductImage, getProductStock, getProductVariants } from "@/lib/product-utils";
 import { formatCurrency } from "@/lib/whatsapp";
 
-type VariantDraft = ProductVariant & { imagesText: string; sizesText: string };
-type VariantPayload = Omit<ProductVariant, "id"> & { id?: string };
+type VariantDraft = Omit<ProductVariant, "stock" | "priceOverride"> & {
+  imagesText: string;
+  sizesText: string;
+  stock: number | string;
+  priceOverride?: number | string;
+};
 
 const emptyProduct = {
   name: "",
@@ -46,6 +51,11 @@ function list(value: string) {
   return value.split(",").map((item) => item.trim()).filter(Boolean);
 }
 
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return <p className="text-sm text-red-700">{message}</p>;
+}
+
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -56,6 +66,7 @@ export default function AdminProductsPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   async function load() {
     try {
@@ -80,6 +91,7 @@ export default function AdminProductsPage() {
   function edit(product: Product) {
     setError("");
     setSuccess("");
+    setFieldErrors({});
     setEditing(product);
     setVariants(getProductVariants(product).map(toVariantDraft));
   }
@@ -87,6 +99,7 @@ export default function AdminProductsPage() {
   function resetForm(form?: HTMLFormElement) {
     setError("");
     setSuccess("");
+    setFieldErrors({});
     setEditing(null);
     setVariants([toVariantDraft()]);
     form?.reset();
@@ -101,33 +114,40 @@ export default function AdminProductsPage() {
     const formElement = event.currentTarget;
     const form = new FormData(formElement);
     const payload = Object.fromEntries(form.entries());
-    const cleanVariants: VariantPayload[] = variants.map((variant) => ({
+    const cleanVariants = variants.map((variant) => ({
       ...(variant.id.startsWith("draft-") ? {} : { id: variant.id }),
       colorName: variant.colorName,
       colorHex: variant.colorHex,
       images: list(variant.imagesText),
       sizes: list(variant.sizesText),
-      stock: Number(variant.stock || 0),
-      sku: variant.sku || undefined,
-      priceOverride: variant.priceOverride ? Number(variant.priceOverride) : undefined,
+      stock: variant.stock,
+      sku: variant.sku,
+      priceOverride: variant.priceOverride,
       active: variant.active !== false
     }));
+    const validation = normalizeProductPayload({
+      ...payload,
+      featured: form.get("featured") === "on",
+      active: form.get("active") === "on",
+      variants: cleanVariants
+    });
+
+    if (!validation.ok) {
+      setFieldErrors(validation.fieldErrors);
+      setError(validation.error);
+      setSuccess("");
+      return;
+    }
 
     try {
       setSaving(true);
       setError("");
       setSuccess("");
+      setFieldErrors({});
       await safeFetchJson<Product>(editing ? `/api/products/${editing.id}` : "/api/products", {
         method: editing ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...payload,
-          price: Number(payload.price),
-          discountPrice: payload.discountPrice ? Number(payload.discountPrice) : undefined,
-          featured: form.get("featured") === "on",
-          active: form.get("active") === "on",
-          variants: cleanVariants
-        })
+        body: JSON.stringify(validation.product)
       });
       const message = editing ? "Product saved." : "Product added.";
       resetForm(formElement);
@@ -166,19 +186,32 @@ export default function AdminProductsPage() {
         </div>
       )}
       <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-        <form key={editing?.id || "new-product"} onSubmit={submit} className="grid gap-4 border border-champagne/30 bg-ivory p-5 shadow-sm">
+        <form key={editing?.id || "new-product"} onSubmit={submit} noValidate className="grid gap-4 border border-champagne/30 bg-ivory p-5 shadow-sm">
           <h2 className="serif-title text-3xl text-aubergine">{editing ? "Edit Product" : "Add Product"}</h2>
-          <Input label="Product name" name="name" required defaultValue={defaults.name} />
-          <TextArea label="Description" name="description" required defaultValue={defaults.description} />
+          <div className="grid gap-1">
+            <Input label="Product name" name="name" required defaultValue={defaults.name} aria-invalid={Boolean(fieldErrors.name)} />
+            <FieldError message={fieldErrors.name} />
+          </div>
+          <div className="grid gap-1">
+            <TextArea label="Description" name="description" required defaultValue={defaults.description} aria-invalid={Boolean(fieldErrors.description)} />
+            <FieldError message={fieldErrors.description} />
+          </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Input label="Base price" name="price" type="number" required defaultValue={defaults.price} />
-            <Input label="Discount price" name="discountPrice" type="number" defaultValue={defaults.discountPrice} />
+            <div className="grid gap-1">
+              <Input label="Base price" name="price" type="number" min="0" step="0.01" required defaultValue={defaults.price} aria-invalid={Boolean(fieldErrors.price)} />
+              <FieldError message={fieldErrors.price} />
+            </div>
+            <div className="grid gap-1">
+              <Input label="Discount price" name="discountPrice" type="number" min="0" step="0.01" defaultValue={defaults.discountPrice} aria-invalid={Boolean(fieldErrors.discountPrice)} />
+              <FieldError message={fieldErrors.discountPrice} />
+            </div>
           </div>
           <label className="grid gap-2 text-sm text-onyx/80">
             <span className="fine-label text-aubergine">Category</span>
-            <select name="categoryId" required defaultValue={defaults.categoryId} className="min-h-12 border border-smoke bg-ivory px-4">
+            <select name="categoryId" required defaultValue={defaults.categoryId} aria-invalid={Boolean(fieldErrors.categoryId)} className="min-h-12 border border-smoke bg-ivory px-4">
               {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
             </select>
+            <FieldError message={fieldErrors.categoryId} />
           </label>
 
           <div className="grid gap-3 border-t border-champagne/25 pt-4">
@@ -188,6 +221,7 @@ export default function AdminProductsPage() {
                 <Plus size={16} /> Add Variant
               </button>
             </div>
+            <FieldError message={fieldErrors.variants} />
             <AnimatePresence initial={false}>
               {variants.map((variant, index) => (
                 <motion.div layout initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: -18 }} key={variant.id} className="grid gap-4 border border-champagne/30 p-4">
@@ -200,18 +234,36 @@ export default function AdminProductsPage() {
                     )}
                   </div>
                   <div className="grid gap-4 sm:grid-cols-[1fr_120px]">
-                    <Input label="Color name" value={variant.colorName} onChange={(event) => updateVariant(index, { colorName: event.target.value })} />
+                    <div className="grid gap-1">
+                      <Input label="Color name" value={variant.colorName} onChange={(event) => updateVariant(index, { colorName: event.target.value })} aria-invalid={Boolean(fieldErrors[`variants.${index}.colorName`])} />
+                      <FieldError message={fieldErrors[`variants.${index}.colorName`]} />
+                    </div>
                     <label className="grid gap-2 text-sm text-onyx/80">
                       <span className="fine-label text-aubergine">Color</span>
                       <input type="color" value={variant.colorHex} onChange={(event) => updateVariant(index, { colorHex: event.target.value })} className="h-12 w-full border border-smoke bg-ivory p-1" />
                     </label>
                   </div>
-                  <Input label="Hex code" value={variant.colorHex} onChange={(event) => updateVariant(index, { colorHex: event.target.value })} />
-                  <TextArea label="Variant images URLs comma separated" value={variant.imagesText} onChange={(event) => updateVariant(index, { imagesText: event.target.value })} />
+                  <div className="grid gap-1">
+                    <Input label="Hex code" value={variant.colorHex} onChange={(event) => updateVariant(index, { colorHex: event.target.value })} aria-invalid={Boolean(fieldErrors[`variants.${index}.colorHex`])} />
+                    <FieldError message={fieldErrors[`variants.${index}.colorHex`]} />
+                  </div>
+                  <div className="grid gap-1">
+                    <TextArea label="Variant images URLs comma separated" value={variant.imagesText} onChange={(event) => updateVariant(index, { imagesText: event.target.value })} aria-invalid={Boolean(fieldErrors[`variants.${index}.images`])} />
+                    <FieldError message={fieldErrors[`variants.${index}.images`]} />
+                  </div>
                   <div className="grid gap-4 sm:grid-cols-3">
-                    <Input label="Available sizes" value={variant.sizesText} onChange={(event) => updateVariant(index, { sizesText: event.target.value })} />
-                    <Input label="Stock" type="number" value={variant.stock} onChange={(event) => updateVariant(index, { stock: Number(event.target.value) })} />
-                    <Input label="Price override" type="number" value={variant.priceOverride || ""} onChange={(event) => updateVariant(index, { priceOverride: event.target.value ? Number(event.target.value) : undefined })} />
+                    <div className="grid gap-1">
+                      <Input label="Available sizes" value={variant.sizesText} onChange={(event) => updateVariant(index, { sizesText: event.target.value })} aria-invalid={Boolean(fieldErrors[`variants.${index}.sizes`])} />
+                      <FieldError message={fieldErrors[`variants.${index}.sizes`]} />
+                    </div>
+                    <div className="grid gap-1">
+                      <Input label="Stock" type="number" min="0" step="1" value={variant.stock} onChange={(event) => updateVariant(index, { stock: event.target.value })} aria-invalid={Boolean(fieldErrors[`variants.${index}.stock`])} />
+                      <FieldError message={fieldErrors[`variants.${index}.stock`]} />
+                    </div>
+                    <div className="grid gap-1">
+                      <Input label="Price override" type="number" min="0" step="0.01" value={variant.priceOverride ?? ""} onChange={(event) => updateVariant(index, { priceOverride: event.target.value || undefined })} aria-invalid={Boolean(fieldErrors[`variants.${index}.priceOverride`])} />
+                      <FieldError message={fieldErrors[`variants.${index}.priceOverride`]} />
+                    </div>
                   </div>
                   <Input label="SKU" value={variant.sku || ""} onChange={(event) => updateVariant(index, { sku: event.target.value })} />
                 </motion.div>

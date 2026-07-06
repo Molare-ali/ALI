@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { errorResponse } from "@/lib/api-response";
 import { id, readData, slugify, writeData } from "@/lib/db";
-import { normalizeVariants } from "@/lib/product-utils";
-import type { Product, ProductVariant } from "@/lib/types";
+import { normalizeProductPayload } from "@/lib/product-validation";
+import type { Product } from "@/lib/types";
 
 export async function GET() {
   try {
@@ -16,36 +16,27 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    if (!body.name || !body.description || !body.categoryId || !body.price) {
-      return NextResponse.json({ error: "Product name, description, category, and price are required." }, { status: 400 });
-    }
-    if (!Number.isFinite(Number(body.price)) || Number(body.price) < 0) {
-      return NextResponse.json({ error: "Product price must be a valid non-negative number." }, { status: 400 });
-    }
-    if (body.discountPrice && (!Number.isFinite(Number(body.discountPrice)) || Number(body.discountPrice) > Number(body.price))) {
-      return NextResponse.json({ error: "Discount price must be a valid number less than or equal to base price." }, { status: 400 });
-    }
+    const validation = normalizeProductPayload(body);
+    if (!validation.ok) return NextResponse.json({ error: validation.error }, { status: 400 });
+    const payload = validation.product;
 
     const data = await readData();
     const product: Product = {
       id: id("prod"),
-      name: String(body.name),
-      slug: slugify(String(body.name)),
-      description: String(body.description),
-      price: Number(body.price),
-      discountPrice: body.discountPrice ? Number(body.discountPrice) : undefined,
-      categoryId: String(body.categoryId),
-      images: Array.isArray(body.images) ? body.images : [],
-      sizes: Array.isArray(body.sizes) ? body.sizes : [],
-      colors: Array.isArray(body.colors) ? body.colors : [],
-      stockQuantity: Number(body.stockQuantity || 0),
-      variants: Array.isArray(body.variants)
-        ? body.variants.map((variant: ProductVariant) => ({ ...variant, id: variant.id?.trim() || id("var") }))
-        : [],
-      featured: Boolean(body.featured),
-      active: Boolean(body.active)
+      name: payload.name,
+      slug: slugify(payload.name),
+      description: payload.description,
+      price: payload.price,
+      discountPrice: payload.discountPrice,
+      categoryId: payload.categoryId,
+      images: payload.images,
+      sizes: payload.sizes,
+      colors: payload.colors,
+      stockQuantity: payload.stockQuantity,
+      variants: payload.variants.map((variant) => ({ ...variant, id: variant.id || id("var") })),
+      featured: payload.featured,
+      active: payload.active
     };
-    product.variants = normalizeVariants(product);
     data.products.unshift(product);
     await writeData(data);
 

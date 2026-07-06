@@ -1,292 +1,514 @@
-import { promises as fs } from "fs";
-import path from "path";
 import { normalizeVariants } from "./product-utils";
-import type { StoreData } from "./types";
+import { supabase } from "./supabase/server";
+import type { CartItem, Category, Order, OrderStatus, Product, ProductVariant, StoreData, StoreSettings } from "./types";
 
-const dataDir = path.join(process.cwd(), "data");
-const bundledDataFile = path.join(dataDir, "molare-store.json");
-const dataFile = process.env.MOLARE_DATA_FILE || (process.env.VERCEL ? path.join("/tmp", "molare-store.json") : bundledDataFile);
-
-const image = (id: string) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1200&q=85`;
-
-export const seedData: StoreData = {
-  categories: [
-    { id: "cat-suiting", name: "Suiting", slug: "suiting", description: "Tailored jackets, trousers, and ceremonial separates." },
-    { id: "cat-shirts", name: "Shirts", slug: "shirts", description: "Crisp shirts, polos, and refined cotton layers." },
-    { id: "cat-outerwear", name: "Outerwear", slug: "outerwear", description: "Men’s coats, jackets, and layering pieces with quiet structure." },
-    { id: "cat-accessories", name: "Accessories", slug: "accessories", description: "Finishing details for a composed modern wardrobe." }
-  ],
-  products: [
-    {
-      id: "prod-roma-suit",
-      name: "Roma Sartorial Suit",
-      slug: "roma-sartorial-suit",
-      description: "A modern two-piece suit cut for a clean shoulder, narrow waist, and composed evening presence.",
-      price: 720,
-      discountPrice: 650,
-      categoryId: "cat-suiting",
-      variants: [
-        {
-          id: "var-roma-onyx",
-          colorName: "Onyx Black",
-          colorHex: "#1A1A1A",
-          images: [image("photo-1594938298603-c8148c4dae35"), image("photo-1507679799987-c73779587ccf")],
-          sizes: ["46", "48", "50", "52", "54"],
-          stock: 16,
-          sku: "MOL-SUIT-ONX"
-        },
-        {
-          id: "var-roma-aubergine",
-          colorName: "Aubergine",
-          colorHex: "#2D1B3D",
-          images: [image("photo-1507679799987-c73779587ccf"), image("photo-1594938298603-c8148c4dae35")],
-          sizes: ["46", "48", "50", "52"],
-          stock: 10,
-          sku: "MOL-SUIT-AUB",
-          priceOverride: 690
-        }
-      ],
-      featured: true,
-      active: true
-    },
-    {
-      id: "prod-milano-shirt",
-      name: "Milano Poplin Shirt",
-      slug: "milano-poplin-shirt",
-      description: "A tailored men’s poplin shirt with a precise collar, clean cuff, and smooth everyday polish.",
-      price: 155,
-      categoryId: "cat-shirts",
-      variants: [
-        {
-          id: "var-milano-avorio",
-          colorName: "Avorio",
-          colorHex: "#F5F1EA",
-          images: [image("photo-1602810318383-e386cc2a3ccf"), image("photo-1598033129183-c4f50c736f10")],
-          sizes: ["S", "M", "L", "XL", "XXL"],
-          stock: 32,
-          sku: "MOL-SHIRT-AVO"
-        },
-        {
-          id: "var-milano-blue",
-          colorName: "Pale Blue",
-          colorHex: "#B9C8D8",
-          images: [image("photo-1598033129183-c4f50c736f10"), image("photo-1602810318383-e386cc2a3ccf")],
-          sizes: ["S", "M", "L", "XL"],
-          stock: 18,
-          sku: "MOL-SHIRT-BLU"
-        }
-      ],
-      featured: true,
-      active: true
-    },
-    {
-      id: "prod-verona-coat",
-      name: "Verona Wool Coat",
-      slug: "verona-wool-coat",
-      description: "A long men’s wool coat with quiet structure, refined drape, and a clean winter silhouette.",
-      price: 690,
-      categoryId: "cat-outerwear",
-      variants: [
-        {
-          id: "var-verona-onyx",
-          colorName: "Onyx Black",
-          colorHex: "#1A1A1A",
-          images: [image("photo-1617137968427-85924c800a22"), image("photo-1516257984-b1b4d707412e")],
-          sizes: ["S", "M", "L", "XL"],
-          stock: 14,
-          sku: "MOL-COAT-ONX"
-        },
-        {
-          id: "var-verona-plum",
-          colorName: "Plum Royal",
-          colorHex: "#4A2E5E",
-          images: [image("photo-1516257984-b1b4d707412e"), image("photo-1617137968427-85924c800a22")],
-          sizes: ["S", "M", "L"],
-          stock: 8,
-          sku: "MOL-COAT-PLM",
-          priceOverride: 720
-        }
-      ],
-      featured: true,
-      active: true
-    },
-    {
-      id: "prod-firenze-tee",
-      name: "Firenze Mercerized T-Shirt",
-      slug: "firenze-mercerized-t-shirt",
-      description: "A premium men’s T-shirt in smooth mercerized cotton jersey with a refined neck line.",
-      price: 95,
-      categoryId: "cat-shirts",
-      variants: [
-        {
-          id: "var-firenze-onyx",
-          colorName: "Onyx Black",
-          colorHex: "#1A1A1A",
-          images: [image("photo-1521572163474-6864f9cf17ab"), image("photo-1503341504253-dff4815485f1")],
-          sizes: ["S", "M", "L", "XL"],
-          stock: 40,
-          sku: "MOL-TEE-ONX"
-        },
-        {
-          id: "var-firenze-avorio",
-          colorName: "Avorio",
-          colorHex: "#F5F1EA",
-          images: [image("photo-1503341504253-dff4815485f1"), image("photo-1521572163474-6864f9cf17ab")],
-          sizes: ["S", "M", "L", "XL"],
-          stock: 26,
-          sku: "MOL-TEE-AVO"
-        }
-      ],
-      featured: false,
-      active: true
-    },
-    {
-      id: "prod-torino-trouser",
-      name: "Torino Tailored Trouser",
-      slug: "torino-tailored-trouser",
-      description: "A tapered men’s trouser with a pressed front, clean waistband, and polished daily movement.",
-      price: 180,
-      categoryId: "cat-suiting",
-      variants: [
-        {
-          id: "var-torino-charcoal",
-          colorName: "Charcoal",
-          colorHex: "#333333",
-          images: [image("photo-1473966968600-fa801b869a1a"), image("photo-1516826957135-700dedea698c")],
-          sizes: ["30", "32", "34", "36", "38"],
-          stock: 24,
-          sku: "MOL-TRS-CHR"
-        },
-        {
-          id: "var-torino-aubergine",
-          colorName: "Aubergine",
-          colorHex: "#2D1B3D",
-          images: [image("photo-1516826957135-700dedea698c"), image("photo-1473966968600-fa801b869a1a")],
-          sizes: ["30", "32", "34", "36"],
-          stock: 12,
-          sku: "MOL-TRS-AUB"
-        }
-      ],
-      featured: false,
-      active: true
-    },
-    {
-      id: "prod-napoli-polo",
-      name: "Napoli Knit Polo",
-      slug: "napoli-knit-polo",
-      description: "A soft knit men’s polo with a structured collar and subtle luxury weight.",
-      price: 135,
-      categoryId: "cat-accessories",
-      variants: [
-        {
-          id: "var-napoli-champagne",
-          colorName: "Champagne",
-          colorHex: "#C9A961",
-          images: [image("photo-1586790170083-2f9ceadc732d"), image("photo-1618354691373-d851c5c3a990")],
-          sizes: ["S", "M", "L", "XL"],
-          stock: 22,
-          sku: "MOL-POLO-CHM"
-        },
-        {
-          id: "var-napoli-plum",
-          colorName: "Plum Royal",
-          colorHex: "#4A2E5E",
-          images: [image("photo-1618354691373-d851c5c3a990"), image("photo-1586790170083-2f9ceadc732d")],
-          sizes: ["M", "L", "XL"],
-          stock: 11,
-          sku: "MOL-POLO-PLM"
-        }
-      ],
-      featured: false,
-      active: true
-    }
-  ],
-  users: [
-    {
-      id: "admin-1",
-      fullName: "Molarè Admin",
-      email: "admin@molare.test",
-      phone: "+963000000000",
-      role: "admin",
-      password: "admin123"
-    }
-  ],
-  orders: [],
-  settings: {
-    whatsappNumber: "963000000000",
-    contactPhone: "+963 000 000 000",
-    contactEmail: "atelier@molare.test",
-    storeAddress: "Molarè Atelier, Damascus",
-    instagramLink: "",
-    facebookLink: "",
-    tiktokLink: "",
-    snapchatLink: ""
-  }
+type DbCategory = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
 };
 
-const currentSeedIds = new Set(seedData.products.map((product) => product.id));
-const legacySeedIds = new Set(["prod-velvet-blazer", "prod-ivory-shirt", "prod-wool-coat", "prod-silk-scarf"]);
+type DbProduct = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  price: number | string;
+  discount_price: number | string | null;
+  category_id: string;
+  images: string[] | null;
+  sizes: string[] | null;
+  colors: string[] | null;
+  stock_quantity: number | null;
+  featured: boolean;
+  active: boolean;
+};
 
-async function ensureDb() {
-  await fs.mkdir(path.dirname(dataFile), { recursive: true });
-  try {
-    await fs.access(dataFile);
-  } catch {
-    try {
-      const bundled = await fs.readFile(bundledDataFile, "utf8");
-      await fs.writeFile(dataFile, bundled, "utf8");
-    } catch {
-      await fs.writeFile(dataFile, JSON.stringify(seedData, null, 2), "utf8");
-    }
-  }
+type DbProductVariant = {
+  id: string;
+  product_id: string;
+  color_name: string;
+  color_hex: string;
+  images: string[] | null;
+  sizes: string[] | null;
+  stock: number | null;
+  sku: string | null;
+  price_override: number | string | null;
+  active: boolean | null;
+  position: number | null;
+};
+
+type DbUser = {
+  id: string;
+  full_name: string;
+  email: string;
+  phone: string | null;
+  role: "customer" | "admin";
+  password: string;
+};
+
+type DbOrder = {
+  id: string;
+  order_number: string;
+  customer_id: string | null;
+  customer_name: string;
+  customer_phone: string;
+  city: string;
+  address: string;
+  notes: string | null;
+  total: number | string;
+  status: OrderStatus;
+  created_at: string;
+};
+
+type DbOrderItem = {
+  order_id: string;
+  product_id: string | null;
+  variant_id: string | null;
+  product_name: string;
+  product_slug: string;
+  image_url: string;
+  size: string;
+  color_name: string;
+  color_hex: string | null;
+  quantity: number;
+  unit_price: number | string;
+  sku: string | null;
+  position: number | null;
+};
+
+type DbStoreSettings = {
+  whatsapp_number: string;
+  contact_phone: string;
+  contact_email: string;
+  store_address: string;
+  instagram_link: string;
+  facebook_link: string;
+  tiktok_link: string;
+  snapchat_link: string;
+};
+
+const defaultSettings: StoreSettings = {
+  whatsappNumber: "",
+  contactPhone: "",
+  contactEmail: "",
+  storeAddress: "",
+  instagramLink: "",
+  facebookLink: "",
+  tiktokLink: "",
+  snapchatLink: ""
+};
+
+function fail(operation: string, error: { message: string; details?: string | null } | null) {
+  if (!error) return;
+  const details = error.details ? ` ${error.details}` : "";
+  throw new Error(`Supabase ${operation} failed: ${error.message}.${details}`);
 }
 
-function migrateData(data: StoreData) {
-  let changed = false;
+function asNumber(value: number | string | null | undefined) {
+  return Number(value || 0);
+}
 
-  if (data.products.some((product) => legacySeedIds.has(product.id))) {
-    data.products = [
-      ...seedData.products,
-      ...data.products.filter((product) => !legacySeedIds.has(product.id) && !currentSeedIds.has(product.id))
-    ];
-    changed = true;
-  }
+function optionalNumber(value: number | string | null | undefined) {
+  if (value === null || value === undefined || value === "") return undefined;
+  return Number(value);
+}
 
-  data.products = data.products.map((product) => {
-    const normalized = normalizeVariants(product);
-    if (!product.variants?.length) changed = true;
-    return { ...product, variants: normalized };
-  });
+function byPositionThenId<T extends { position: number | null; id?: string }>(a: T, b: T) {
+  return (a.position ?? 0) - (b.position ?? 0) || String(a.id || "").localeCompare(String(b.id || ""));
+}
 
-  data.users = data.users.map((user) => {
-    if (user.fullName.includes("Ã")) {
-      changed = true;
-      return { ...user, fullName: user.fullName.replace("MolarÃ¨", "Molarè") };
+function mapCategory(row: DbCategory): Category {
+  return {
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    description: row.description
+  };
+}
+
+function mapVariant(row: DbProductVariant): ProductVariant {
+  return {
+    id: row.id,
+    colorName: row.color_name,
+    colorHex: row.color_hex,
+    images: row.images || [],
+    sizes: row.sizes || [],
+    stock: row.stock || 0,
+    sku: row.sku || undefined,
+    priceOverride: optionalNumber(row.price_override),
+    active: row.active !== false
+  };
+}
+
+function mapProduct(row: DbProduct, variants: ProductVariant[]): Product {
+  return {
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    description: row.description,
+    price: asNumber(row.price),
+    discountPrice: optionalNumber(row.discount_price),
+    categoryId: row.category_id,
+    images: row.images || [],
+    sizes: row.sizes || [],
+    colors: row.colors || [],
+    stockQuantity: row.stock_quantity || 0,
+    variants,
+    featured: row.featured,
+    active: row.active
+  };
+}
+
+function mapOrderItem(row: DbOrderItem): CartItem {
+  return {
+    productId: row.product_id || "",
+    variantId: row.variant_id || undefined,
+    name: row.product_name,
+    slug: row.product_slug,
+    image: row.image_url,
+    size: row.size,
+    color: row.color_name,
+    colorHex: row.color_hex || undefined,
+    quantity: row.quantity,
+    price: asNumber(row.unit_price),
+    sku: row.sku || undefined
+  };
+}
+
+function mapOrder(row: DbOrder, items: CartItem[]): Order {
+  return {
+    id: row.id,
+    orderNumber: row.order_number,
+    customerId: row.customer_id || "",
+    customerName: row.customer_name,
+    customerPhone: row.customer_phone,
+    city: row.city,
+    address: row.address,
+    notes: row.notes || "",
+    items,
+    total: asNumber(row.total),
+    status: row.status,
+    createdAt: row.created_at
+  };
+}
+
+function mapSettings(row: DbStoreSettings | null): StoreSettings {
+  if (!row) return defaultSettings;
+  return {
+    whatsappNumber: row.whatsapp_number,
+    contactPhone: row.contact_phone,
+    contactEmail: row.contact_email,
+    storeAddress: row.store_address,
+    instagramLink: row.instagram_link,
+    facebookLink: row.facebook_link,
+    tiktokLink: row.tiktok_link,
+    snapchatLink: row.snapchat_link
+  };
+}
+
+function productRow(product: Product) {
+  return {
+    id: product.id,
+    name: product.name,
+    slug: product.slug,
+    description: product.description,
+    price: product.price,
+    discount_price: product.discountPrice ?? null,
+    category_id: product.categoryId,
+    images: product.images || [],
+    sizes: product.sizes || [],
+    colors: product.colors || [],
+    stock_quantity: product.stockQuantity || 0,
+    featured: product.featured,
+    active: product.active
+  };
+}
+
+function variantRow(productId: string, variant: ProductVariant, position: number) {
+  return {
+    id: variant.id,
+    product_id: productId,
+    color_name: variant.colorName,
+    color_hex: variant.colorHex,
+    images: variant.images || [],
+    sizes: variant.sizes || [],
+    stock: variant.stock || 0,
+    sku: variant.sku || null,
+    price_override: variant.priceOverride ?? null,
+    active: variant.active !== false,
+    position
+  };
+}
+
+function orderRow(order: Order) {
+  return {
+    id: order.id,
+    order_number: order.orderNumber,
+    customer_id: order.customerId || null,
+    customer_name: order.customerName,
+    customer_phone: order.customerPhone,
+    city: order.city,
+    address: order.address,
+    notes: order.notes || "",
+    total: order.total,
+    status: order.status,
+    created_at: order.createdAt
+  };
+}
+
+function orderItemRow(orderId: string, item: CartItem, position: number, productIds: Set<string>, variantIds: Set<string>) {
+  return {
+    order_id: orderId,
+    product_id: productIds.has(item.productId) ? item.productId : null,
+    variant_id: item.variantId && variantIds.has(item.variantId) ? item.variantId : null,
+    product_name: item.name,
+    product_slug: item.slug,
+    image_url: item.image,
+    size: item.size,
+    color_name: item.color,
+    color_hex: item.colorHex || null,
+    quantity: item.quantity,
+    unit_price: item.price,
+    sku: item.sku || null,
+    position
+  };
+}
+
+function settingsRow(settings: StoreSettings) {
+  return {
+    id: "default",
+    whatsapp_number: settings.whatsappNumber,
+    contact_phone: settings.contactPhone,
+    contact_email: settings.contactEmail,
+    store_address: settings.storeAddress,
+    instagram_link: settings.instagramLink,
+    facebook_link: settings.facebookLink,
+    tiktok_link: settings.tiktokLink,
+    snapchat_link: settings.snapchatLink
+  };
+}
+
+function ensureVariantIds(product: Product) {
+  product.variants = normalizeVariants(product).map((variant) => ({
+    ...variant,
+    id: variant.id?.trim() || id("var")
+  }));
+  return product.variants;
+}
+
+async function tableIds(table: "categories" | "products" | "orders" | "users") {
+  const { data, error } = await supabase.from(table).select("id");
+  fail(`select ${table} ids`, error);
+  return new Set((data as Array<{ id: string }> | null || []).map((row) => row.id));
+}
+
+async function deleteMissingRows(table: "categories" | "products" | "orders" | "users", keepIds: string[]) {
+  const existingIds = await tableIds(table);
+  const keep = new Set(keepIds);
+  const missing = [...existingIds].filter((existingId) => !keep.has(existingId));
+  if (!missing.length) return;
+
+  const { error } = await supabase.from(table).delete().in("id", missing);
+  fail(`delete missing ${table}`, error);
+}
+
+async function ensureUniqueOrderNumbers(orders: Order[]) {
+  if (!orders.length) return;
+
+  const { data, error } = await supabase.from("orders").select("id, order_number");
+  fail("select existing order numbers", error);
+
+  const existing = (data as Array<{ id: string; order_number: string }> | null) || [];
+  const existingOwnerByNumber = new Map(existing.map((order) => [order.order_number, order.id]));
+  const usedNumbers = new Set<string>();
+  let nextSequence = 1;
+  const currentYear = new Date().getFullYear();
+
+  for (const order of [...existing, ...orders.map((item) => ({ id: item.id, order_number: item.orderNumber }))]) {
+    const match = order.order_number.match(/^MOL-(\d{4})-(\d{4,})$/);
+    if (match?.[1] === String(currentYear)) {
+      nextSequence = Math.max(nextSequence, Number(match[2]) + 1);
     }
-    return user;
-  });
-
-  if (data.settings.storeAddress.includes("Ã")) {
-    data.settings.storeAddress = data.settings.storeAddress.replace("MolarÃ¨", "Molarè");
-    changed = true;
   }
 
-  return { data, changed };
+  for (const order of orders) {
+    const owner = existingOwnerByNumber.get(order.orderNumber);
+    const canKeep = order.orderNumber && !usedNumbers.has(order.orderNumber) && (!owner || owner === order.id);
+    if (canKeep) {
+      usedNumbers.add(order.orderNumber);
+      continue;
+    }
+
+    let nextOrderNumber = "";
+    do {
+      nextOrderNumber = `MOL-${currentYear}-${String(nextSequence).padStart(4, "0")}`;
+      nextSequence += 1;
+    } while (usedNumbers.has(nextOrderNumber) || existingOwnerByNumber.has(nextOrderNumber));
+
+    order.orderNumber = nextOrderNumber;
+    usedNumbers.add(nextOrderNumber);
+  }
 }
 
 export async function readData(): Promise<StoreData> {
-  await ensureDb();
-  const raw = await fs.readFile(dataFile, "utf8");
-  const migrated = migrateData(JSON.parse(raw) as StoreData);
-  if (migrated.changed) {
-    await writeData(migrated.data);
+  const [
+    categoriesResult,
+    productsResult,
+    variantsResult,
+    usersResult,
+    ordersResult,
+    orderItemsResult,
+    settingsResult
+  ] = await Promise.all([
+    supabase.from("categories").select("id, name, slug, description").order("created_at", { ascending: true }),
+    supabase
+      .from("products")
+      .select("id, name, slug, description, price, discount_price, category_id, images, sizes, colors, stock_quantity, featured, active")
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("product_variants")
+      .select("id, product_id, color_name, color_hex, images, sizes, stock, sku, price_override, active, position")
+      .order("position", { ascending: true }),
+    supabase.from("users").select("id, full_name, email, phone, role, password").order("created_at", { ascending: true }),
+    supabase
+      .from("orders")
+      .select("id, order_number, customer_id, customer_name, customer_phone, city, address, notes, total, status, created_at")
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("order_items")
+      .select("order_id, product_id, variant_id, product_name, product_slug, image_url, size, color_name, color_hex, quantity, unit_price, sku, position")
+      .order("position", { ascending: true }),
+    supabase
+      .from("store_settings")
+      .select("whatsapp_number, contact_phone, contact_email, store_address, instagram_link, facebook_link, tiktok_link, snapchat_link")
+      .eq("id", "default")
+      .maybeSingle()
+  ]);
+
+  fail("select categories", categoriesResult.error);
+  fail("select products", productsResult.error);
+  fail("select product_variants", variantsResult.error);
+  fail("select users", usersResult.error);
+  fail("select orders", ordersResult.error);
+  fail("select order_items", orderItemsResult.error);
+  fail("select store_settings", settingsResult.error);
+
+  const variantsByProduct = new Map<string, ProductVariant[]>();
+  for (const row of ((variantsResult.data as DbProductVariant[] | null) || []).sort(byPositionThenId)) {
+    const variants = variantsByProduct.get(row.product_id) || [];
+    variants.push(mapVariant(row));
+    variantsByProduct.set(row.product_id, variants);
   }
-  return migrated.data;
+
+  const itemsByOrder = new Map<string, CartItem[]>();
+  for (const row of ((orderItemsResult.data as DbOrderItem[] | null) || []).sort(byPositionThenId)) {
+    const items = itemsByOrder.get(row.order_id) || [];
+    items.push(mapOrderItem(row));
+    itemsByOrder.set(row.order_id, items);
+  }
+
+  return {
+    categories: ((categoriesResult.data as DbCategory[] | null) || []).map(mapCategory),
+    products: ((productsResult.data as DbProduct[] | null) || []).map((product) => mapProduct(product, variantsByProduct.get(product.id) || [])),
+    users: ((usersResult.data as DbUser[] | null) || []).map((user) => ({
+      id: user.id,
+      fullName: user.full_name,
+      email: user.email,
+      phone: user.phone || undefined,
+      role: user.role,
+      password: user.password
+    })),
+    orders: ((ordersResult.data as DbOrder[] | null) || []).map((order) => mapOrder(order, itemsByOrder.get(order.id) || [])),
+    settings: mapSettings((settingsResult.data as DbStoreSettings | null) || null)
+  };
 }
 
 export async function writeData(data: StoreData) {
-  await ensureDb();
-  await fs.writeFile(dataFile, JSON.stringify(data, null, 2), "utf8");
+  for (const product of data.products) {
+    ensureVariantIds(product);
+  }
+  await ensureUniqueOrderNumbers(data.orders);
+
+  if (data.categories.length) {
+    const { error: categoriesError } = await supabase.from("categories").upsert(
+      data.categories.map((category) => ({
+        id: category.id,
+        name: category.name,
+        slug: category.slug,
+        description: category.description
+      })),
+      { onConflict: "id" }
+    );
+    fail("upsert categories", categoriesError);
+  }
+
+  if (data.products.length) {
+    const { error: productsError } = await supabase.from("products").upsert(data.products.map(productRow), { onConflict: "id" });
+    fail("upsert products", productsError);
+  }
+
+  const productIds = new Set(data.products.map((product) => product.id));
+  const variantIds = new Set(data.products.flatMap((product) => (product.variants || []).map((variant) => variant.id)));
+
+  for (const product of data.products) {
+    const keepVariantIds = (product.variants || []).map((variant) => variant.id);
+    if (keepVariantIds.length) {
+      const { error } = await supabase.from("product_variants").delete().eq("product_id", product.id).not("id", "in", `(${keepVariantIds.join(",")})`);
+      fail(`delete removed variants for product ${product.id}`, error);
+    } else {
+      const { error } = await supabase.from("product_variants").delete().eq("product_id", product.id);
+      fail(`delete variants for product ${product.id}`, error);
+    }
+  }
+
+  const variantRows = data.products.flatMap((product) => (product.variants || []).map((variant, index) => variantRow(product.id, variant, index)));
+  if (variantRows.length) {
+    const { error } = await supabase.from("product_variants").upsert(variantRows, { onConflict: "id" });
+    fail("upsert product_variants", error);
+  }
+
+  if (data.users.length) {
+    const { error: usersError } = await supabase.from("users").upsert(
+      data.users.map((user) => ({
+        id: user.id,
+        full_name: user.fullName,
+        email: user.email.toLowerCase(),
+        phone: user.phone || null,
+        role: user.role,
+        password: user.password
+      })),
+      { onConflict: "id" }
+    );
+    fail("upsert users", usersError);
+  }
+
+  if (data.orders.length) {
+    const { error: ordersError } = await supabase.from("orders").upsert(data.orders.map(orderRow), { onConflict: "id" });
+    fail("upsert orders", ordersError);
+  }
+
+  const orderIds = data.orders.map((order) => order.id);
+  if (orderIds.length) {
+    const { error } = await supabase.from("order_items").delete().in("order_id", orderIds);
+    fail("delete existing order_items", error);
+  }
+
+  const orderItemRows = data.orders.flatMap((order) =>
+    order.items.map((item, index) => orderItemRow(order.id, item, index, productIds, variantIds))
+  );
+  if (orderItemRows.length) {
+    const { error } = await supabase.from("order_items").insert(orderItemRows);
+    fail("insert order_items", error);
+  }
+
+  const { error: settingsError } = await supabase.from("store_settings").upsert(settingsRow(data.settings), { onConflict: "id" });
+  fail("upsert store_settings", settingsError);
+
+  await deleteMissingRows("orders", data.orders.map((order) => order.id));
+  await deleteMissingRows("products", data.products.map((product) => product.id));
+  await deleteMissingRows("categories", data.categories.map((category) => category.id));
 }
 
 export function slugify(value: string) {

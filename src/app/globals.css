@@ -69,6 +69,15 @@ select {
   background: linear-gradient(90deg, transparent, #c9a961, transparent);
 }
 
+body:has(.admin-route) > header,
+body:has(.admin-route) > footer {
+  display: none;
+}
+
+body:has(.admin-route) main {
+  min-height: 100vh;
+}
+
 .skeleton {
   position: relative;
   overflow: hidden;

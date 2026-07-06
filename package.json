@@ -9,6 +9,7 @@
     "lint": "eslint src eslint.config.mjs next.config.mjs tailwind.config.ts"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.110.0",
     "framer-motion": "^12.40.0",
     "lucide-react": "^0.468.0",
     "next": "^15.0.0",

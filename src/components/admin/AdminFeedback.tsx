@@ -17,10 +17,10 @@ export function AdminFeedback({ type, message, onDismiss }: AdminFeedbackProps) 
   if (!message) return null;
 
   return (
-    <div className={`flex items-start justify-between gap-4 border px-4 py-3 text-sm ${styles[type]}`} role={type === "error" ? "alert" : "status"}>
-      <p>{message}</p>
+    <div className={`flex items-start justify-between gap-4 border px-4 py-3 text-sm shadow-sm ${styles[type]}`} role={type === "error" ? "alert" : "status"}>
+      <p className="leading-6">{message}</p>
       {onDismiss && (
-        <button type="button" onClick={onDismiss} className="grid h-6 w-6 shrink-0 place-items-center opacity-70 transition hover:opacity-100" aria-label="Dismiss message">
+        <button type="button" onClick={onDismiss} className="grid h-7 w-7 shrink-0 place-items-center border border-current/20 opacity-70 transition hover:opacity-100" aria-label="Dismiss message">
           <X size={15} />
         </button>
       )}

@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { AdminFeedback } from "@/components/admin/AdminFeedback";
-import { AdminLayout } from "@/components/AdminLayout";
+import { AdminEmptyState, AdminLayout, AdminSectionCard } from "@/components/AdminLayout";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { safeFetchJson } from "@/lib/api-client";
@@ -49,19 +49,34 @@ export default function AdminSettingsPage() {
           {success && <AdminFeedback type="success" message={success} onDismiss={() => setSuccess("")} />}
         </div>
       )}
+      {!settings && !error && <AdminEmptyState title="Loading settings" message="Store settings are being loaded from the admin API." />}
       {settings && (
-        <form onSubmit={submit} className="grid max-w-3xl gap-5 border border-champagne/30 bg-ivory p-6 shadow-sm">
-          <Input label="WhatsApp number" name="whatsappNumber" required defaultValue={settings.whatsappNumber} />
-          <Input label="Contact phone" name="contactPhone" required defaultValue={settings.contactPhone} />
-          <Input label="Contact email" name="contactEmail" type="email" required defaultValue={settings.contactEmail} />
-          <Input label="Store address" name="storeAddress" required defaultValue={settings.storeAddress} />
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Input label="Instagram link" name="instagramLink" defaultValue={settings.instagramLink} />
-            <Input label="Facebook link" name="facebookLink" defaultValue={settings.facebookLink} />
-            <Input label="TikTok link" name="tiktokLink" defaultValue={settings.tiktokLink} />
-            <Input label="Snapchat link" name="snapchatLink" defaultValue={settings.snapchatLink} />
+        <form onSubmit={submit} className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px]">
+          <div className="grid gap-6">
+            <AdminSectionCard title="Contact" eyebrow="Customer Channels" description="Primary contact details shown to customers and used for order conversations.">
+              <div className="grid gap-4 md:grid-cols-3">
+              <Input label="WhatsApp number" name="whatsappNumber" required defaultValue={settings.whatsappNumber} />
+              <Input label="Contact phone" name="contactPhone" required defaultValue={settings.contactPhone} />
+              <Input label="Contact email" name="contactEmail" type="email" required defaultValue={settings.contactEmail} />
+              </div>
+            </AdminSectionCard>
+
+            <AdminSectionCard title="Store Details" eyebrow="Location" description="Keep the public store address concise and readable.">
+              <Input label="Store address" name="storeAddress" required defaultValue={settings.storeAddress} />
+            </AdminSectionCard>
           </div>
-          <Button type="submit" disabled={saving}>{saving ? "Saving..." : "Save Settings"}</Button>
+
+          <AdminSectionCard title="Social Links" eyebrow="Brand Presence" description="Optional channels surfaced in the storefront footer." className="self-start">
+            <div className="grid gap-4">
+              <Input label="Instagram link" name="instagramLink" defaultValue={settings.instagramLink} />
+              <Input label="Facebook link" name="facebookLink" defaultValue={settings.facebookLink} />
+              <Input label="TikTok link" name="tiktokLink" defaultValue={settings.tiktokLink} />
+              <Input label="Snapchat link" name="snapchatLink" defaultValue={settings.snapchatLink} />
+            </div>
+            <div className="mt-6 border-t border-champagne/25 pt-5">
+              <Button type="submit" disabled={saving} className="w-full">{saving ? "Saving..." : "Save Settings"}</Button>
+            </div>
+          </AdminSectionCard>
         </form>
       )}
     </AdminLayout>

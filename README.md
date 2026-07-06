@@ -29,4 +29,4 @@ The easiest free deployment path is GitHub + Vercel:
    - Build command: `npm run build`
    - Install command: `npm install`
 
-Note: The included JSON data layer is for demo hosting. On Vercel, writes use temporary storage and may reset. For a production store, connect a hosted database such as Supabase or Neon. TEST TEXT
+Note: The included JSON data layer is for demo hosting. On Vercel, writes use temporary storage and may reset. For a production store, connect a hosted database such as Supabase or Neon.

@@ -3,15 +3,18 @@
 import { FormEvent, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Plus, Trash2 } from "lucide-react";
+import { AdminFeedback } from "@/components/admin/AdminFeedback";
 import { AdminLayout } from "@/components/AdminLayout";
 import { Button } from "@/components/Button";
 import { Input, TextArea } from "@/components/Input";
 import { Skeleton } from "@/components/Skeleton";
+import { safeFetchJson } from "@/lib/api-client";
 import type { Category, Product, ProductVariant } from "@/lib/types";
 import { getProductImage, getProductStock, getProductVariants } from "@/lib/product-utils";
 import { formatCurrency } from "@/lib/whatsapp";
 
 type VariantDraft = ProductVariant & { imagesText: string; sizesText: string };
+type VariantPayload = Omit<ProductVariant, "id"> & { id?: string };
 
 const emptyProduct = {
   name: "",
@@ -49,13 +52,25 @@ export default function AdminProductsPage() {
   const [editing, setEditing] = useState<Product | null>(null);
   const [variants, setVariants] = useState<VariantDraft[]>([toVariantDraft()]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   async function load() {
-    setLoading(true);
-    const [productResponse, categoryResponse] = await Promise.all([fetch("/api/products"), fetch("/api/categories")]);
-    setProducts(await productResponse.json());
-    setCategories(await categoryResponse.json());
-    setLoading(false);
+    try {
+      setLoading(true);
+      const [nextProducts, nextCategories] = await Promise.all([
+        safeFetchJson<Product[]>("/api/products"),
+        safeFetchJson<Category[]>("/api/categories")
+      ]);
+      setProducts(nextProducts);
+      setCategories(nextCategories);
+    } catch (loadError) {
+      setError(loadError instanceof Error ? loadError.message : "Unable to load products.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -63,11 +78,15 @@ export default function AdminProductsPage() {
   }, []);
 
   function edit(product: Product) {
+    setError("");
+    setSuccess("");
     setEditing(product);
     setVariants(getProductVariants(product).map(toVariantDraft));
   }
 
   function resetForm(form?: HTMLFormElement) {
+    setError("");
+    setSuccess("");
     setEditing(null);
     setVariants([toVariantDraft()]);
     form?.reset();
@@ -79,10 +98,11 @@ export default function AdminProductsPage() {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const form = new FormData(event.currentTarget);
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     const payload = Object.fromEntries(form.entries());
-    const cleanVariants: ProductVariant[] = variants.map((variant) => ({
-      id: variant.id.startsWith("draft-") ? "" : variant.id,
+    const cleanVariants: VariantPayload[] = variants.map((variant) => ({
+      ...(variant.id.startsWith("draft-") ? {} : { id: variant.id }),
       colorName: variant.colorName,
       colorHex: variant.colorHex,
       images: list(variant.imagesText),
@@ -93,31 +113,58 @@ export default function AdminProductsPage() {
       active: variant.active !== false
     }));
 
-    await fetch(editing ? `/api/products/${editing.id}` : "/api/products", {
-      method: editing ? "PUT" : "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...payload,
-        price: Number(payload.price),
-        discountPrice: payload.discountPrice ? Number(payload.discountPrice) : undefined,
-        featured: form.get("featured") === "on",
-        active: form.get("active") === "on",
-        variants: cleanVariants
-      })
-    });
-    resetForm(event.currentTarget);
-    await load();
+    try {
+      setSaving(true);
+      setError("");
+      setSuccess("");
+      await safeFetchJson<Product>(editing ? `/api/products/${editing.id}` : "/api/products", {
+        method: editing ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...payload,
+          price: Number(payload.price),
+          discountPrice: payload.discountPrice ? Number(payload.discountPrice) : undefined,
+          featured: form.get("featured") === "on",
+          active: form.get("active") === "on",
+          variants: cleanVariants
+        })
+      });
+      const message = editing ? "Product saved." : "Product added.";
+      resetForm(formElement);
+      setSuccess(message);
+      await load();
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : "Unable to save product.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function remove(id: string) {
-    await fetch(`/api/products/${id}`, { method: "DELETE" });
-    await load();
+    try {
+      setDeletingId(id);
+      setError("");
+      setSuccess("");
+      await safeFetchJson<{ ok: boolean }>(`/api/products/${id}`, { method: "DELETE" });
+      setSuccess("Product deleted.");
+      await load();
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : "Unable to delete product.");
+    } finally {
+      setDeletingId(null);
+    }
   }
 
   const defaults = editing ? { ...editing, discountPrice: editing.discountPrice || "" } : { ...emptyProduct, categoryId: categories[0]?.id || "" };
 
   return (
     <AdminLayout title="Products">
+      {(error || success) && (
+        <div className="mb-5 grid gap-3">
+          {error && <AdminFeedback type="error" message={error} onDismiss={() => setError("")} />}
+          {success && <AdminFeedback type="success" message={success} onDismiss={() => setSuccess("")} />}
+        </div>
+      )}
       <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
         <form key={editing?.id || "new-product"} onSubmit={submit} className="grid gap-4 border border-champagne/30 bg-ivory p-5 shadow-sm">
           <h2 className="serif-title text-3xl text-aubergine">{editing ? "Edit Product" : "Add Product"}</h2>
@@ -177,8 +224,8 @@ export default function AdminProductsPage() {
             <label className="flex items-center gap-2"><input type="checkbox" name="active" defaultChecked={defaults.active} /> Active</label>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Button type="submit">{editing ? "Save Product" : "Add Product"}</Button>
-            {editing && <Button type="button" variant="secondary" onClick={() => resetForm()}>Cancel</Button>}
+            <Button type="submit" disabled={saving}>{saving ? "Saving..." : editing ? "Save Product" : "Add Product"}</Button>
+            {editing && <Button type="button" variant="secondary" onClick={() => resetForm()} disabled={saving}>Cancel</Button>}
           </div>
         </form>
 
@@ -198,8 +245,8 @@ export default function AdminProductsPage() {
                   <p className="mt-2 text-xs text-onyx/50">{product.active ? "Active" : "Inactive"} {product.featured ? "/ Featured" : ""}</p>
                 </div>
                 <div className="flex gap-2 md:flex-col">
-                  <button onClick={() => edit(product)} className="border border-champagne/40 px-3 py-2 text-sm text-aubergine">Edit</button>
-                  <button onClick={() => remove(product.id)} className="border border-red-300 px-3 py-2 text-sm text-red-700">Delete</button>
+                  <button disabled={saving || deletingId === product.id} onClick={() => edit(product)} className="border border-champagne/40 px-3 py-2 text-sm text-aubergine disabled:cursor-not-allowed disabled:opacity-60">Edit</button>
+                  <button disabled={deletingId === product.id} onClick={() => remove(product.id)} className="border border-red-300 px-3 py-2 text-sm text-red-700 disabled:cursor-not-allowed disabled:opacity-60">{deletingId === product.id ? "Deleting..." : "Delete"}</button>
                 </div>
               </motion.div>
             );

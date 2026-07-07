@@ -280,9 +280,9 @@
       "categoryId": "cat-accessories",
       "variants": [
         {
-          "id": "var-napoli-champagne",
-          "colorName": "Champagne",
-          "colorHex": "#C9A961",
+          "id": "var-napoli-plum",
+          "colorName": "Plum",
+          "colorHex": "#5A2D82",
           "images": [
             "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?auto=format&fit=crop&w=1200&q=85",
             "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?auto=format&fit=crop&w=1200&q=85"
@@ -319,16 +319,7 @@
       "active": true
     }
   ],
-  "users": [
-    {
-      "id": "admin-1",
-      "fullName": "Molarè Admin",
-      "email": "admin@molare.test",
-      "phone": "+963000000000",
-      "role": "admin",
-      "password": "admin123"
-    }
-  ],
+  "users": [],
   "orders": [],
   "settings": {
     "whatsappNumber": "963000000000",

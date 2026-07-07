@@ -78,7 +78,7 @@ function VariantImagePreview({ url, alt }: { url: string; alt: string }) {
 
 function FormSection({ title, children, action }: { title: string; children: ReactNode; action?: ReactNode }) {
   return (
-    <section className="grid gap-4 border-t border-champagne/25 pt-5 first:border-t-0 first:pt-0">
+    <section className="grid gap-4 border-t border-aubergine/25 pt-5 first:border-t-0 first:pt-0">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="fine-label text-aubergine">{title}</h3>
         {action}
@@ -260,13 +260,13 @@ export default function AdminProductsPage() {
         </div>
       )}
       <div className="grid gap-8 xl:grid-cols-[minmax(0,1.1fr)_minmax(360px,0.9fr)]">
-        <form key={editing?.id || "new-product"} onSubmit={submit} noValidate className="min-w-0 border border-champagne/30 bg-ivory p-5 shadow-sm sm:p-6 lg:p-7">
-          <div className="mb-6 flex flex-wrap items-start justify-between gap-4 border-b border-champagne/25 pb-5">
+        <form key={editing?.id || "new-product"} onSubmit={submit} noValidate className="min-w-0 border border-aubergine/30 bg-ivory p-5 shadow-sm sm:p-6 lg:p-7">
+          <div className="mb-6 flex flex-wrap items-start justify-between gap-4 border-b border-aubergine/25 pb-5">
             <div>
-              <p className="fine-label text-champagne">{editing ? "Editing Product" : "New Product"}</p>
+              <p className="fine-label text-plum">{editing ? "Editing Product" : "New Product"}</p>
               <h2 className="serif-title mt-1 text-4xl leading-tight text-aubergine">{editing ? "Edit Product" : "Add Product"}</h2>
             </div>
-            {editing && <AdminStatusBadge tone="gold">Draft Edits</AdminStatusBadge>}
+            {editing && <AdminStatusBadge tone="neutral">Draft Edits</AdminStatusBadge>}
           </div>
 
           <div className="grid gap-7">
@@ -319,7 +319,7 @@ export default function AdminProductsPage() {
                   required
                   defaultValue={defaults.categoryId}
                   aria-invalid={Boolean(fieldErrors.categoryId)}
-                  className="min-h-12 w-full border border-smoke bg-ivory px-4 text-onyx outline-none transition focus:border-champagne focus:ring-2 focus:ring-champagne/20"
+                  className="min-h-12 w-full border border-smoke bg-ivory px-4 text-onyx outline-none transition focus:border-aubergine focus:ring-2 focus:ring-deepPurple/20"
                 >
                   {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
                 </select>
@@ -333,7 +333,7 @@ export default function AdminProductsPage() {
                 <button
                   type="button"
                   onClick={() => setVariants((current) => [...current, toVariantDraft()])}
-                  className="inline-flex min-h-10 items-center gap-2 border border-champagne/50 px-3 text-sm font-semibold text-aubergine transition hover:border-aubergine/40 hover:bg-champagne/10"
+                  className="inline-flex min-h-10 items-center gap-2 border border-aubergine/50 px-3 text-sm font-semibold text-aubergine transition hover:border-aubergine/40 hover:bg-softPurple/10"
                 >
                   <Plus size={16} /> Add Variant
                 </button>
@@ -353,11 +353,11 @@ export default function AdminProductsPage() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, x: -18 }}
                         key={variant.id}
-                        className="min-w-0 border border-champagne/35 bg-linen/20 p-4 shadow-sm sm:p-5"
+                        className="min-w-0 border border-aubergine/35 bg-linen/20 p-4 shadow-sm sm:p-5"
                       >
-                        <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-champagne/25 pb-4">
+                        <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-aubergine/25 pb-4">
                           <div className="flex items-center gap-3">
-                            <span className="grid h-8 w-8 place-items-center border border-champagne/50 bg-ivory text-sm font-semibold text-aubergine">{index + 1}</span>
+                            <span className="grid h-8 w-8 place-items-center border border-aubergine/50 bg-ivory text-sm font-semibold text-aubergine">{index + 1}</span>
                             <p className="serif-title text-2xl text-aubergine">Variant {index + 1}</p>
                           </div>
                           {variants.length > 1 && (
@@ -388,7 +388,7 @@ export default function AdminProductsPage() {
                                 type="color"
                                 value={variant.colorHex}
                                 onChange={(event) => updateVariant(index, { colorHex: event.target.value })}
-                                className="h-12 w-full border border-smoke bg-ivory p-1 outline-none transition focus:border-champagne focus:ring-2 focus:ring-champagne/20"
+                                className="h-12 w-full border border-smoke bg-ivory p-1 outline-none transition focus:border-aubergine focus:ring-2 focus:ring-deepPurple/20"
                                 aria-label={`Variant ${index + 1} color picker`}
                               />
                             </label>
@@ -410,7 +410,7 @@ export default function AdminProductsPage() {
                                 <p className="fine-label text-aubergine">Images</p>
                                 <p className="mt-1 text-sm text-onyx/55">{imageUrls.length} image{imageUrls.length === 1 ? "" : "s"} uploaded</p>
                               </div>
-                              <label className="inline-flex min-h-10 cursor-pointer items-center gap-2 border border-champagne/50 bg-ivory px-3 text-sm font-semibold text-aubergine transition hover:border-aubergine/40 hover:bg-champagne/10">
+                              <label className="inline-flex min-h-10 cursor-pointer items-center gap-2 border border-aubergine/50 bg-ivory px-3 text-sm font-semibold text-aubergine transition hover:border-aubergine/40 hover:bg-softPurple/10">
                                 <ImagePlus size={16} />
                                 {isUploading ? "Uploading..." : "Upload Image"}
                                 <input
@@ -426,7 +426,7 @@ export default function AdminProductsPage() {
                             {imageUrls.length > 0 && (
                               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 2xl:grid-cols-4">
                                 {imageUrls.map((url, imageIndex) => (
-                                  <div key={`${url}-${imageIndex}`} className="relative overflow-hidden border border-champagne/35 bg-ivory shadow-sm">
+                                  <div key={`${url}-${imageIndex}`} className="relative overflow-hidden border border-aubergine/35 bg-ivory shadow-sm">
                                     <VariantImagePreview url={url} alt={`Variant ${index + 1} image ${imageIndex + 1}`} />
                                     <button
                                       type="button"
@@ -491,16 +491,16 @@ export default function AdminProductsPage() {
 
             <FormSection title="Product Flags">
               <div className="grid gap-3 sm:grid-cols-2">
-                <label className="flex min-h-12 items-center gap-3 border border-champagne/30 bg-linen/20 px-4 text-sm font-semibold text-aubergine">
+                <label className="flex min-h-12 items-center gap-3 border border-aubergine/30 bg-linen/20 px-4 text-sm font-semibold text-aubergine">
                   <input type="checkbox" name="featured" defaultChecked={defaults.featured} className="h-4 w-4 accent-aubergine" /> Featured product
                 </label>
-                <label className="flex min-h-12 items-center gap-3 border border-champagne/30 bg-linen/20 px-4 text-sm font-semibold text-aubergine">
+                <label className="flex min-h-12 items-center gap-3 border border-aubergine/30 bg-linen/20 px-4 text-sm font-semibold text-aubergine">
                   <input type="checkbox" name="active" defaultChecked={defaults.active} className="h-4 w-4 accent-aubergine" /> Active
                 </label>
               </div>
             </FormSection>
 
-            <div className="sticky bottom-0 z-10 -mx-5 flex flex-wrap gap-3 border-t border-champagne/30 bg-ivory/95 px-5 pt-5 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-7 lg:px-7">
+            <div className="sticky bottom-0 z-10 -mx-5 flex flex-wrap gap-3 border-t border-aubergine/30 bg-ivory/95 px-5 pt-5 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-7 lg:px-7">
               <Button type="submit" disabled={saving} className="min-w-36">{saving ? "Saving..." : editing ? "Save Product" : "Add Product"}</Button>
               {editing && <Button type="button" variant="secondary" onClick={() => resetForm()} disabled={saving}>Cancel</Button>}
             </div>
@@ -510,20 +510,20 @@ export default function AdminProductsPage() {
         <section className="min-w-0">
           <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="fine-label text-champagne">Catalog</p>
+              <p className="fine-label text-plum">Catalog</p>
               <h2 className="serif-title text-3xl text-aubergine">Product List</h2>
             </div>
             <AdminStatusBadge tone="muted">{products.length} products</AdminStatusBadge>
           </div>
 
           <div className="grid content-start gap-4">
-          {loading && Array.from({ length: 4 }).map((_, index) => <Skeleton key={index} className="h-40 w-full border border-champagne/20" />)}
+          {loading && Array.from({ length: 4 }).map((_, index) => <Skeleton key={index} className="h-40 w-full border border-aubergine/20" />)}
           {!loading && products.length === 0 && <AdminEmptyState title="No products yet" message="Add a product and at least one variant to start building the storefront catalog." />}
           {!loading && products.map((product) => {
             const variantsForProduct = getProductVariants(product);
             return (
-              <motion.article layout key={product.id} className="grid gap-4 border border-champagne/30 bg-ivory p-4 shadow-sm sm:grid-cols-[112px_minmax(0,1fr)]">
-                <div className="aspect-square w-28 overflow-hidden border border-champagne/25 bg-linen sm:w-full">
+              <motion.article layout key={product.id} className="grid gap-4 border border-aubergine/30 bg-ivory p-4 shadow-sm sm:grid-cols-[112px_minmax(0,1fr)]">
+                <div className="aspect-square w-28 overflow-hidden border border-aubergine/25 bg-linen sm:w-full">
                   <img src={getProductImage(product, variantsForProduct[0])} alt={product.name} className="h-full w-full object-cover" />
                 </div>
                 <div className="grid min-w-0 gap-4">
@@ -534,17 +534,17 @@ export default function AdminProductsPage() {
                     </div>
                     <div className="flex flex-wrap gap-2 sm:justify-end">
                       <AdminStatusBadge tone={product.active ? "purple" : "muted"}>{product.active ? "Active" : "Inactive"}</AdminStatusBadge>
-                      {product.featured && <AdminStatusBadge tone="gold">Featured</AdminStatusBadge>}
+                      {product.featured && <AdminStatusBadge tone="neutral">Featured</AdminStatusBadge>}
                     </div>
                   </div>
 
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <div className="border border-champagne/20 bg-linen/20 px-3 py-2">
-                      <p className="fine-label text-champagne">Price</p>
+                    <div className="border border-aubergine/20 bg-linen/20 px-3 py-2">
+                      <p className="fine-label text-plum">Price</p>
                       <p className="mt-1 font-semibold text-aubergine">{formatCurrency(product.discountPrice || product.price)}</p>
                     </div>
-                    <div className="border border-champagne/20 bg-linen/20 px-3 py-2">
-                      <p className="fine-label text-champagne">Stock</p>
+                    <div className="border border-aubergine/20 bg-linen/20 px-3 py-2">
+                      <p className="fine-label text-plum">Stock</p>
                       <p className="mt-1 font-semibold text-aubergine">{getProductStock(product)}</p>
                     </div>
                   </div>
@@ -554,7 +554,7 @@ export default function AdminProductsPage() {
                       <span
                         key={variant.id}
                         title={variant.colorName}
-                        className="h-5 w-5 border border-champagne/60 shadow-sm"
+                        className="h-5 w-5 border border-aubergine/60 shadow-sm"
                         style={{ backgroundColor: variant.colorHex }}
                       />
                     ))}
@@ -565,7 +565,7 @@ export default function AdminProductsPage() {
                     <button
                       disabled={saving || deletingId === product.id}
                       onClick={() => edit(product)}
-                      className="min-h-10 border border-champagne/50 px-4 text-sm font-semibold text-aubergine transition hover:border-aubergine/40 hover:bg-champagne/10 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="min-h-10 border border-aubergine/50 px-4 text-sm font-semibold text-aubergine transition hover:border-aubergine/40 hover:bg-softPurple/10 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       Edit
                     </button>

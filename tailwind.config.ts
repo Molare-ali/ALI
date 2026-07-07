@@ -9,13 +9,16 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        brandBlack: "#0F0F12",
         aubergine: "#2D1B3D",
         plum: "#4A2E5E",
-        champagne: "#C9A961",
-        ivory: "#F5F1EA",
+        deepPurple: "#5A2D82",
+        softPurple: "#EEE7F4",
+        borderNeutral: "#D8D2DD",
+        ivory: "#F7F5F2",
         onyx: "#1A1A1A",
-        linen: "#E9DDCF",
-        smoke: "#D7C9BC"
+        linen: "#EEE7F4",
+        smoke: "#D8D2DD"
       },
       fontFamily: {
         serifLuxury: ["Cormorant Garamond", "Garamond", "Georgia", "serif"],
@@ -24,7 +27,7 @@ const config: Config = {
       },
       boxShadow: {
         luxury: "0 22px 70px rgba(45, 27, 61, 0.12)",
-        gold: "0 10px 30px rgba(201, 169, 97, 0.18)"
+        purple: "0 10px 30px rgba(90, 45, 130, 0.16)"
       }
     }
   },

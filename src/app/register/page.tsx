@@ -6,6 +6,13 @@ import { FormEvent, Suspense, useState } from "react";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { useAuth } from "@/contexts/AuthContext";
+import type { Customer } from "@/lib/types";
+
+function nextRedirectPath(redirect: string, user: Customer) {
+  if (!redirect.startsWith("/")) return "/checkout";
+  if (redirect.startsWith("/admin") && user.role !== "admin") return "/checkout";
+  return redirect;
+}
 
 function RegisterForm() {
   const { register } = useAuth();
@@ -19,13 +26,13 @@ function RegisterForm() {
     setError("");
     const form = new FormData(event.currentTarget);
     try {
-      await register({
+      const user = await register({
         fullName: String(form.get("fullName")),
         email: String(form.get("email")),
         phone: String(form.get("phone")),
         password: String(form.get("password"))
       });
-      router.push(redirect);
+      router.push(nextRedirectPath(redirect, user));
     } catch (issue) {
       setError(issue instanceof Error ? issue.message : "Registration failed");
     }
@@ -35,7 +42,7 @@ function RegisterForm() {
     <section className="luxury-container grid min-h-[70vh] place-items-center py-12">
       <form onSubmit={submit} className="glass-panel grid w-full max-w-lg gap-5 p-8">
         <div>
-          <p className="fine-label text-champagne">Join Molarè</p>
+          <p className="fine-label text-plum">Join Molarè</p>
           <h1 className="serif-title text-5xl text-aubergine">Create account</h1>
         </div>
         {error && <p className="border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}

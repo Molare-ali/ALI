@@ -13,7 +13,7 @@ export function Input({ label, className = "", ...props }: InputProps) {
     <label className="grid gap-2 text-sm text-onyx/80">
       <span className="fine-label text-aubergine">{label}</span>
       <input
-        className={`min-h-12 border border-smoke bg-ivory px-4 py-3 text-onyx outline-none transition focus:border-champagne focus:ring-2 focus:ring-champagne/20 ${className}`}
+        className={`min-h-12 border border-smoke bg-ivory px-4 py-3 text-onyx outline-none transition focus:border-aubergine focus:ring-2 focus:ring-deepPurple/20 ${className}`}
         {...props}
       />
     </label>
@@ -25,7 +25,7 @@ export function TextArea({ label, className = "", ...props }: TextAreaProps) {
     <label className="grid gap-2 text-sm text-onyx/80">
       <span className="fine-label text-aubergine">{label}</span>
       <textarea
-        className={`min-h-28 border border-smoke bg-ivory px-4 py-3 text-onyx outline-none transition focus:border-champagne focus:ring-2 focus:ring-champagne/20 ${className}`}
+        className={`min-h-28 border border-smoke bg-ivory px-4 py-3 text-onyx outline-none transition focus:border-aubergine focus:ring-2 focus:ring-deepPurple/20 ${className}`}
         {...props}
       />
     </label>

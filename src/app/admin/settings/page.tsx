@@ -73,7 +73,7 @@ export default function AdminSettingsPage() {
               <Input label="TikTok link" name="tiktokLink" defaultValue={settings.tiktokLink} />
               <Input label="Snapchat link" name="snapchatLink" defaultValue={settings.snapchatLink} />
             </div>
-            <div className="mt-6 border-t border-champagne/25 pt-5">
+            <div className="mt-6 border-t border-aubergine/25 pt-5">
               <Button type="submit" disabled={saving} className="w-full">{saving ? "Saving..." : "Save Settings"}</Button>
             </div>
           </AdminSectionCard>

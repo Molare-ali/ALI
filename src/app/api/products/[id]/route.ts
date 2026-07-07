@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { errorResponse } from "@/lib/api-response";
+import { getAuthErrorResponse, requireAdmin } from "@/lib/auth";
 import { id as nextId, readData, slugify, writeData } from "@/lib/db";
 import { normalizeProductPayload } from "@/lib/product-validation";
 
@@ -17,6 +18,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
 
 export async function PUT(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
+    await requireAdmin();
     const { id: productId } = await context.params;
     const body = await request.json();
     const validation = normalizeProductPayload(body);
@@ -47,12 +49,15 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
     await writeData(data);
     return NextResponse.json(data.products[index]);
   } catch (error) {
+    const authResponse = getAuthErrorResponse(error);
+    if (authResponse) return authResponse;
     return errorResponse(error, 500, "Unable to update product.");
   }
 }
 
 export async function DELETE(_request: Request, context: { params: Promise<{ id: string }> }) {
   try {
+    await requireAdmin();
     const { id: productId } = await context.params;
     const data = await readData();
     const exists = data.products.some((item) => item.id === productId);
@@ -61,6 +66,8 @@ export async function DELETE(_request: Request, context: { params: Promise<{ id:
     await writeData(data);
     return NextResponse.json({ ok: true });
   } catch (error) {
+    const authResponse = getAuthErrorResponse(error);
+    if (authResponse) return authResponse;
     return errorResponse(error, 500, "Unable to delete product.");
   }
 }

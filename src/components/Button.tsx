@@ -11,8 +11,8 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const styles = {
-  primary: "bg-aubergine text-ivory border-aubergine hover:bg-plum shadow-gold",
-  secondary: "bg-transparent text-aubergine border-champagne hover:bg-champagne/15",
+  primary: "bg-aubergine text-ivory border-aubergine hover:bg-plum shadow-purple",
+  secondary: "bg-transparent text-aubergine border-aubergine hover:bg-softPurple",
   ghost: "bg-transparent text-onyx border-transparent hover:text-plum"
 };
 

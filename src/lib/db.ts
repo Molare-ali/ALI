@@ -1,5 +1,6 @@
 import { normalizeVariants } from "./product-utils";
 import { supabase } from "./supabase/server";
+import type { UserAuthRecord } from "./user-auth";
 import type { CartItem, Category, Order, OrderStatus, Product, ProductVariant, StoreData, StoreSettings } from "./types";
 
 type DbCategory = {
@@ -45,7 +46,10 @@ type DbUser = {
   email: string;
   phone: string | null;
   role: "customer" | "admin";
-  password: string;
+};
+
+type DbUserAuth = DbUser & {
+  password_hash: string | null;
 };
 
 type DbOrder = {
@@ -371,7 +375,7 @@ export async function readData(): Promise<StoreData> {
       .from("product_variants")
       .select("id, product_id, color_name, color_hex, images, sizes, stock, sku, price_override, active, position")
       .order("position", { ascending: true }),
-    supabase.from("users").select("id, full_name, email, phone, role, password").order("created_at", { ascending: true }),
+    supabase.from("users").select("id, full_name, email, phone, role").order("created_at", { ascending: true }),
     supabase
       .from("orders")
       .select("id, order_number, customer_id, customer_name, customer_phone, city, address, notes, total, status, created_at")
@@ -417,8 +421,7 @@ export async function readData(): Promise<StoreData> {
       fullName: user.full_name,
       email: user.email,
       phone: user.phone || undefined,
-      role: user.role,
-      password: user.password
+      role: user.role
     })),
     orders: ((ordersResult.data as DbOrder[] | null) || []).map((order) => mapOrder(order, itemsByOrder.get(order.id) || [])),
     settings: mapSettings((settingsResult.data as DbStoreSettings | null) || null)
@@ -476,8 +479,7 @@ export async function writeData(data: StoreData) {
         full_name: user.fullName,
         email: user.email.toLowerCase(),
         phone: user.phone || null,
-        role: user.role,
-        password: user.password
+        role: user.role
       })),
       { onConflict: "id" }
     );
@@ -522,4 +524,39 @@ export function slugify(value: string) {
 
 export function id(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
+}
+
+export async function findUserAuthByEmail(email: string): Promise<UserAuthRecord | null> {
+  const normalizedEmail = email.toLowerCase().trim();
+  const { data, error } = await supabase
+    .from("users")
+    .select("id, full_name, email, phone, role, password_hash")
+    .eq("email", normalizedEmail)
+    .maybeSingle();
+  fail("select user auth by email", error);
+
+  const user = data as DbUserAuth | null;
+  if (!user) return null;
+
+  return {
+    id: user.id,
+    fullName: user.full_name,
+    email: user.email,
+    phone: user.phone || undefined,
+    role: user.role,
+    passwordHash: user.password_hash
+  };
+}
+
+export async function createUserWithPasswordHash(user: UserAuthRecord) {
+  const row = {
+    id: user.id,
+    full_name: user.fullName,
+    email: user.email.toLowerCase(),
+    phone: user.phone || null,
+    role: user.role,
+    password_hash: user.passwordHash
+  };
+  const { error } = await supabase.from("users").insert(row);
+  fail("insert user", error);
 }

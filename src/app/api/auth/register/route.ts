@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
-import { id, readData, writeData } from "@/lib/db";
+import { createSessionToken, getSessionCookieOptions, sessionCookieName } from "@/lib/auth";
+import { createUserWithPasswordHash, findUserAuthByEmail, id } from "@/lib/db";
+import { hashPassword, toSafeUser } from "@/lib/user-auth";
 
 export async function POST(request: Request) {
   const body = await request.json();
@@ -12,21 +14,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Name, valid email, and a 6 character password are required." }, { status: 400 });
   }
 
-  const data = await readData();
-  if (data.users.some((user) => user.email.toLowerCase() === email)) {
+  const existingUser = await findUserAuthByEmail(email);
+  if (existingUser) {
     return NextResponse.json({ error: "This email is already registered." }, { status: 409 });
   }
 
-  const user = { id: id("user"), fullName, email, phone, role: "customer" as const, password };
-  data.users.push(user);
-  await writeData(data);
-  const safeUser = {
-    id: user.id,
-    fullName: user.fullName,
-    email: user.email,
-    phone: user.phone,
-    role: user.role
-  };
+  const user = { id: id("user"), fullName, email, phone, role: "customer" as const, passwordHash: await hashPassword(password) };
+  await createUserWithPasswordHash(user);
 
-  return NextResponse.json({ user: safeUser }, { status: 201 });
+  const safeUser = toSafeUser(user);
+  const response = NextResponse.json({ user: safeUser }, { status: 201 });
+  response.cookies.set(sessionCookieName, await createSessionToken(safeUser), getSessionCookieOptions());
+  return response;
 }

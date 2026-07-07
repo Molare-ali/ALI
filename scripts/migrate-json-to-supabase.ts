@@ -2,9 +2,15 @@ import { loadEnvConfig } from "@next/env";
 import { createClient } from "@supabase/supabase-js";
 import { promises as fs } from "fs";
 import path from "path";
-import type { CartItem, Category, Order, Product, ProductVariant, StoreData, StoreSettings } from "../src/lib/types";
+import type { CartItem, Category, Customer, Order, Product, ProductVariant, StoreData, StoreSettings } from "../src/lib/types";
 
-type JsonUser = StoreData["users"][number];
+type JsonUser = Customer & {
+  passwordHash: string;
+};
+
+type JsonStoreData = Omit<StoreData, "users"> & {
+  users: JsonUser[];
+};
 
 type Summary = {
   categories: number;
@@ -137,7 +143,10 @@ function validateUser(user: JsonUser, index: number) {
   if (user.role !== "customer" && user.role !== "admin") {
     throw new Error(`${pathName}.role must be "customer" or "admin".`);
   }
-  assertString(user.password, `${pathName}.password`);
+  if (!user.passwordHash) {
+    throw new Error(`${pathName}.passwordHash is required.`);
+  }
+  assertString(user.passwordHash, `${pathName}.passwordHash`);
 }
 
 function validateOrderItem(item: CartItem, orderIndex: number, itemIndex: number) {
@@ -188,7 +197,7 @@ function validateSettings(settings: StoreSettings) {
   assertOptionalString(settings.snapchatLink, "settings.snapchatLink");
 }
 
-function validateStoreData(data: StoreData) {
+function validateStoreData(data: JsonStoreData) {
   assertObject(data, "data");
   assertArray(data.categories, "categories");
   assertArray(data.products, "products");
@@ -303,7 +312,7 @@ async function insertOrderItems(rows: Record<string, unknown>[]) {
 async function main() {
   const dataPath = path.join(process.cwd(), "data", "molare-store.json");
   const raw = await fs.readFile(dataPath, "utf8");
-  const data = JSON.parse(raw) as StoreData;
+  const data = JSON.parse(raw) as JsonStoreData;
   validateStoreData(data);
 
   const summary: Summary = {
@@ -364,16 +373,18 @@ async function main() {
     )
   );
 
+  const userRows = data.users.map((user) => ({
+    id: user.id,
+    full_name: user.fullName,
+    email: user.email.toLowerCase(),
+    phone: user.phone || null,
+    role: user.role,
+    password_hash: user.passwordHash
+  }));
+
   await upsertOrThrow(
     "users",
-    data.users.map((user) => ({
-      id: user.id,
-      full_name: user.fullName,
-      email: user.email.toLowerCase(),
-      phone: user.phone || null,
-      role: user.role,
-      password: user.password
-    }))
+    userRows
   );
 
   await upsertOrThrow(

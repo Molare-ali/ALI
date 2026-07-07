@@ -59,7 +59,7 @@ export function ProductDetailClient({
   return (
     <section className="luxury-container grid gap-12 py-12 lg:grid-cols-[1fr_0.85fr]">
       <div className="grid gap-4">
-        <div className="aspect-[4/5] overflow-hidden border border-champagne/30 bg-linen">
+        <div className="aspect-[4/5] overflow-hidden border border-aubergine/30 bg-linen">
           <AnimatePresence mode="wait">
             <motion.img
               key={image}
@@ -75,17 +75,17 @@ export function ProductDetailClient({
         </div>
         <div className="grid grid-cols-3 gap-4">
           {variant?.images.map((item) => (
-            <button key={item} onClick={() => setImage(item)} className={`aspect-[4/3] overflow-hidden border transition ${image === item ? "border-aubergine" : "border-champagne/30"}`}>
+            <button key={item} onClick={() => setImage(item)} className={`aspect-[4/3] overflow-hidden border transition ${image === item ? "border-aubergine" : "border-aubergine/30"}`}>
               <img src={item} alt={product.name} className="h-full w-full object-cover transition duration-500 hover:scale-105" />
             </button>
           ))}
         </div>
       </div>
       <div className="lg:sticky lg:top-28 lg:self-start">
-        <p className="fine-label text-champagne">{categoryName}</p>
+        <p className="fine-label text-plum">{categoryName}</p>
         <h1 className="serif-title mt-3 text-5xl leading-tight text-aubergine">{product.name}</h1>
         <p className="mt-5 text-lg leading-8 text-onyx/70">{product.description}</p>
-        <div className="my-8 gold-line" />
+        <div className="my-8 brand-line" />
 
         <div className="grid gap-7">
           <div className="flex items-baseline gap-3">
@@ -97,8 +97,8 @@ export function ProductDetailClient({
             <span className="fine-label text-aubergine">Color</span>
             <div className="flex flex-wrap gap-3">
               {variants.map((item) => (
-                <button key={item.id} onClick={() => selectVariant(item.id)} className={`flex min-h-12 items-center gap-3 border px-4 text-sm transition ${variant?.id === item.id ? "border-aubergine bg-aubergine text-ivory" : "border-champagne/45 text-aubergine hover:bg-champagne/15"}`}>
-                  <span className="h-5 w-5 border border-champagne/60" style={{ backgroundColor: item.colorHex }} />
+                <button key={item.id} onClick={() => selectVariant(item.id)} className={`flex min-h-12 items-center gap-3 border px-4 text-sm transition ${variant?.id === item.id ? "border-aubergine bg-aubergine text-ivory" : "border-aubergine/45 text-aubergine hover:bg-softPurple/15"}`}>
+                  <span className="h-5 w-5 border border-aubergine/60" style={{ backgroundColor: item.colorHex }} />
                   {item.colorName}
                 </button>
               ))}
@@ -109,7 +109,7 @@ export function ProductDetailClient({
             <span className="fine-label text-aubergine">Size</span>
             <div className="flex flex-wrap gap-2">
               {variant?.sizes.map((item) => (
-                <button key={item} onClick={() => setSize(item)} className={`min-h-11 min-w-12 border px-4 text-sm transition ${size === item ? "border-aubergine bg-aubergine text-ivory" : "border-champagne/45 text-aubergine hover:bg-champagne/15"}`}>
+                <button key={item} onClick={() => setSize(item)} className={`min-h-11 min-w-12 border px-4 text-sm transition ${size === item ? "border-aubergine bg-aubergine text-ivory" : "border-aubergine/45 text-aubergine hover:bg-softPurple/15"}`}>
                   {item}
                 </button>
               ))}
@@ -123,7 +123,7 @@ export function ProductDetailClient({
 
           <label className="grid max-w-36 gap-2">
             <span className="fine-label text-aubergine">Quantity</span>
-            <input type="number" min={1} max={variant?.stock || 1} value={quantity} onChange={(event) => setQuantity(Number(event.target.value))} className="min-h-12 border border-smoke bg-ivory px-4 outline-none focus:border-champagne" />
+            <input type="number" min={1} max={variant?.stock || 1} value={quantity} onChange={(event) => setQuantity(Number(event.target.value))} className="min-h-12 border border-smoke bg-ivory px-4 outline-none focus:border-aubergine focus:ring-2 focus:ring-deepPurple/20" />
           </label>
 
           <div className="flex flex-wrap items-center gap-4">
@@ -133,7 +133,7 @@ export function ProductDetailClient({
             <AnimatePresence>
               {added && (
                 <motion.span initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="inline-flex items-center gap-2 text-sm font-semibold text-aubergine">
-                  <Check size={17} className="text-champagne" /> Added to cart
+                  <Check size={17} className="text-plum" /> Added to cart
                 </motion.span>
               )}
             </AnimatePresence>

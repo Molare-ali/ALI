@@ -8,7 +8,7 @@ export default async function ContactPage() {
   return (
     <section className="luxury-container grid gap-10 py-12 lg:grid-cols-[0.85fr_1.15fr]">
       <div>
-        <p className="fine-label text-champagne">Contact</p>
+        <p className="fine-label text-plum">Contact</p>
         <h1 className="serif-title mt-3 text-5xl text-aubergine">Speak with Molarè</h1>
         <p className="mt-5 text-lg leading-8 text-onyx/70">For appointments, product questions, and order support, contact the atelier directly.</p>
       </div>
@@ -18,8 +18,8 @@ export default async function ContactPage() {
           { Icon: Mail, label: "Email", value: settings.contactEmail, href: `mailto:${settings.contactEmail}` },
           { Icon: MapPin, label: "Address", value: settings.storeAddress, href: "" }
         ].map(({ Icon, label, value, href }) => (
-          <div key={label} className="flex gap-4 border border-champagne/30 bg-ivory p-5">
-            <Icon className="text-champagne" />
+          <div key={label} className="flex gap-4 border border-aubergine/30 bg-ivory p-5">
+            <Icon className="text-plum" />
             <div>
               <p className="fine-label text-aubergine">{label}</p>
               {href ? <a className="mt-2 block text-onyx/74" href={href}>{value}</a> : <p className="mt-2 text-onyx/74">{value}</p>}

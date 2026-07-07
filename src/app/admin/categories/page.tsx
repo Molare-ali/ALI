@@ -86,7 +86,7 @@ export default function AdminCategoriesPage() {
           <form key={editing?.id || "new-category"} onSubmit={submit} className="grid min-w-0 content-start gap-4">
             <Input label="Category name" name="name" required defaultValue={editing?.name || ""} />
             <TextArea label="Description" name="description" required defaultValue={editing?.description || ""} className="min-h-32 resize-y" />
-            <div className="flex flex-wrap gap-3 border-t border-champagne/25 pt-5">
+            <div className="flex flex-wrap gap-3 border-t border-aubergine/25 pt-5">
               <Button type="submit" disabled={saving}>{saving ? "Saving..." : editing ? "Save Category" : "Add Category"}</Button>
               {editing && <Button type="button" variant="secondary" disabled={saving} onClick={() => setEditing(null)}>Cancel</Button>}
             </div>
@@ -94,9 +94,9 @@ export default function AdminCategoriesPage() {
         </AdminSectionCard>
 
         <section className="min-w-0">
-          <div className="mb-4 flex flex-wrap items-start justify-between gap-4 border-b border-champagne/25 pb-4">
+          <div className="mb-4 flex flex-wrap items-start justify-between gap-4 border-b border-aubergine/25 pb-4">
             <div>
-              <p className="fine-label text-champagne">Collection List</p>
+              <p className="fine-label text-plum">Collection List</p>
               <h2 className="serif-title text-3xl leading-tight text-aubergine">Existing Categories</h2>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-onyx/62">Edit display names and descriptions without changing category routes.</p>
             </div>
@@ -112,7 +112,7 @@ export default function AdminCategoriesPage() {
                     <p className="mt-2 max-w-3xl text-sm leading-6 text-onyx/64">{category.description}</p>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <button disabled={saving || deletingId === category.id} onClick={() => { setError(""); setSuccess(""); setEditing(category); }} className="min-h-10 border border-champagne/50 px-4 text-sm font-semibold text-aubergine transition hover:bg-champagne/10 disabled:cursor-not-allowed disabled:opacity-60">Edit</button>
+                    <button disabled={saving || deletingId === category.id} onClick={() => { setError(""); setSuccess(""); setEditing(category); }} className="min-h-10 border border-aubergine/50 px-4 text-sm font-semibold text-aubergine transition hover:bg-softPurple/10 disabled:cursor-not-allowed disabled:opacity-60">Edit</button>
                     <button disabled={deletingId === category.id} onClick={() => remove(category.id)} className="min-h-10 border border-red-300 px-4 text-sm font-semibold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60">{deletingId === category.id ? "Deleting..." : "Delete"}</button>
                   </div>
                 </div>

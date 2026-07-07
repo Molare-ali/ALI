@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { errorResponse } from "@/lib/api-response";
+import { getAuthErrorResponse, requireAdmin } from "@/lib/auth";
 import { readData, writeData } from "@/lib/db";
 import type { OrderStatus } from "@/lib/types";
 
@@ -7,6 +8,7 @@ const statuses: OrderStatus[] = ["Pending", "Confirmed", "Preparing", "Delivered
 
 export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
+    await requireAdmin();
     const { id } = await context.params;
     const body = await request.json();
     const status = body.status as OrderStatus;
@@ -20,6 +22,8 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     await writeData(data);
     return NextResponse.json(order);
   } catch (error) {
+    const authResponse = getAuthErrorResponse(error);
+    if (authResponse) return authResponse;
     return errorResponse(error, 500, "Unable to update order status.");
   }
 }

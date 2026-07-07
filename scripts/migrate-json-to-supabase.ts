@@ -2,12 +2,10 @@ import { loadEnvConfig } from "@next/env";
 import { createClient } from "@supabase/supabase-js";
 import { promises as fs } from "fs";
 import path from "path";
-import { hashPassword } from "../src/lib/user-auth";
 import type { CartItem, Category, Customer, Order, Product, ProductVariant, StoreData, StoreSettings } from "../src/lib/types";
 
 type JsonUser = Customer & {
-  password?: string;
-  passwordHash?: string;
+  passwordHash: string;
 };
 
 type JsonStoreData = Omit<StoreData, "users"> & {
@@ -145,11 +143,10 @@ function validateUser(user: JsonUser, index: number) {
   if (user.role !== "customer" && user.role !== "admin") {
     throw new Error(`${pathName}.role must be "customer" or "admin".`);
   }
-  if (!user.passwordHash && !user.password) {
+  if (!user.passwordHash) {
     throw new Error(`${pathName}.passwordHash is required.`);
   }
-  assertOptionalString(user.passwordHash, `${pathName}.passwordHash`);
-  assertOptionalString(user.password, `${pathName}.password`);
+  assertString(user.passwordHash, `${pathName}.passwordHash`);
 }
 
 function validateOrderItem(item: CartItem, orderIndex: number, itemIndex: number) {
@@ -376,16 +373,14 @@ async function main() {
     )
   );
 
-  const userRows = await Promise.all(
-    data.users.map(async (user) => ({
-      id: user.id,
-      full_name: user.fullName,
-      email: user.email.toLowerCase(),
-      phone: user.phone || null,
-      role: user.role,
-      password_hash: user.passwordHash || (await hashPassword(user.password || ""))
-    }))
-  );
+  const userRows = data.users.map((user) => ({
+    id: user.id,
+    full_name: user.fullName,
+    email: user.email.toLowerCase(),
+    phone: user.phone || null,
+    role: user.role,
+    password_hash: user.passwordHash
+  }));
 
   await upsertOrThrow(
     "users",

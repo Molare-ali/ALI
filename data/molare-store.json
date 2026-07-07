@@ -319,16 +319,7 @@
       "active": true
     }
   ],
-  "users": [
-    {
-      "id": "admin-1",
-      "fullName": "Molarè Admin",
-      "email": "admin@molare.test",
-      "phone": "+963000000000",
-      "role": "admin",
-      "passwordHash": "$2b$10$1Gx72OCJdJd4qve.ws3iQ.SZwpmCAg1ZdkW5H3/FOiE0Vv1LG4Rc6"
-    }
-  ],
+  "users": [],
   "orders": [],
   "settings": {
     "whatsappNumber": "963000000000",

@@ -558,13 +558,5 @@ export async function createUserWithPasswordHash(user: UserAuthRecord) {
     password_hash: user.passwordHash
   };
   const { error } = await supabase.from("users").insert(row);
-  if (!error) return;
-
-  if (error.message.toLowerCase().includes("password")) {
-    const { error: legacyPasswordError } = await supabase.from("users").insert({ ...row, password: "" });
-    fail("insert user with legacy empty password", legacyPasswordError);
-    return;
-  }
-
   fail("insert user", error);
 }

@@ -1,7 +1,6 @@
-
 # Molare Commerce
 
-Luxury men's fashion e-commerce demo built with Next.js, TypeScript, Tailwind CSS, and a JSON-backed demo data layer.
+Luxury men's fashion e-commerce built with Next.js, TypeScript, Tailwind CSS, Supabase, and signed session cookies.
 
 ## Local Development
 
@@ -12,21 +11,39 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-## Demo Admin
+## Environment
 
-Email: `admin@molare.test`
+Required variables:
 
-Password: `admin123`
+```bash
+NEXT_PUBLIC_SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+AUTH_SESSION_SECRET=
+```
+
+Set all three variables in Netlify before deploying. `AUTH_SESSION_SECRET` signs the `molare_session` cookie; changing it invalidates existing sessions and logs users out.
+
+## Auth Migration
+
+If an existing Supabase `users` table still contains legacy plaintext password values, run the password hash migration before dropping the legacy column:
+
+```bash
+npm run db:migrate-passwords
+```
+
+After confirming every user has `password_hash` populated and login works, run this SQL in Supabase:
+
+```sql
+alter table public.users drop column if exists password;
+```
 
 ## Deploy
 
-The easiest free deployment path is GitHub + Vercel:
+The deployment target is Netlify:
 
 1. Push this project to a GitHub repository.
-2. Import the repository in Vercel.
+2. Import the repository in Netlify.
 3. Use the default settings:
    - Framework: Next.js
    - Build command: `npm run build`
    - Install command: `npm install`
-
-Note: The included JSON data layer is for demo hosting. On Vercel, writes use temporary storage and may reset. For a production store, connect a hosted database such as Supabase or Neon.

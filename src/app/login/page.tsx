@@ -19,7 +19,11 @@ function LoginForm() {
     setError("");
     const form = new FormData(event.currentTarget);
     try {
-      await login(String(form.get("email")), String(form.get("password")));
+      const user = await login(String(form.get("email")), String(form.get("password")));
+      if (redirect.startsWith("/admin") && user.role !== "admin") {
+        router.push("/checkout");
+        return;
+      }
       router.push(redirect);
     } catch (issue) {
       setError(issue instanceof Error ? issue.message : "Login failed");
@@ -35,8 +39,8 @@ function LoginForm() {
           <p className="mt-3 text-sm text-onyx/64">Please log in or create an account to complete your order.</p>
         </div>
         {error && <p className="border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
-        <Input label="Email" name="email" type="email" required defaultValue="admin@molare.test" />
-        <Input label="Password" name="password" type="password" required defaultValue="admin123" />
+        <Input label="Email" name="email" type="email" required />
+        <Input label="Password" name="password" type="password" required />
         <Button type="submit">Log in</Button>
         <p className="text-sm text-onyx/66">New to Molarè? <Link className="font-semibold text-aubergine" href={`/register?redirect=${encodeURIComponent(redirect)}`}>Create an account</Link></p>
       </form>

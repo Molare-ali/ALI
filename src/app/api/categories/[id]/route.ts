@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import { errorResponse } from "@/lib/api-response";
+import { getAuthErrorResponse, requireAdmin } from "@/lib/auth";
 import { readData, slugify, writeData } from "@/lib/db";
 
 export async function PUT(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
+    await requireAdmin();
     const { id } = await context.params;
     const body = await request.json();
     if (!body.name || !body.description) {
@@ -21,12 +23,15 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
     await writeData(data);
     return NextResponse.json(data.categories[index]);
   } catch (error) {
+    const authResponse = getAuthErrorResponse(error);
+    if (authResponse) return authResponse;
     return errorResponse(error, 500, "Unable to update category.");
   }
 }
 
 export async function DELETE(_request: Request, context: { params: Promise<{ id: string }> }) {
   try {
+    await requireAdmin();
     const { id } = await context.params;
     const data = await readData();
     const exists = data.categories.some((item) => item.id === id);
@@ -39,6 +44,8 @@ export async function DELETE(_request: Request, context: { params: Promise<{ id:
     await writeData(data);
     return NextResponse.json({ ok: true });
   } catch (error) {
+    const authResponse = getAuthErrorResponse(error);
+    if (authResponse) return authResponse;
     return errorResponse(error, 500, "Unable to delete category.");
   }
 }

@@ -1,5 +1,12 @@
 import assert from "node:assert/strict";
-import { createSessionToken, getSessionCookieOptions, verifySessionToken } from "../src/lib/auth";
+import {
+  authErrorResponse,
+  createSessionToken,
+  getSessionCookieOptions,
+  requireAdminFromSession,
+  requireUserFromSession,
+  verifySessionToken
+} from "../src/lib/auth";
 import { hashPassword, toSafeUser, verifyPassword } from "../src/lib/user-auth";
 
 const user = {
@@ -53,6 +60,24 @@ async function main() {
 
   const developmentOptions = getSessionCookieOptions("development");
   assert.equal(developmentOptions.secure, false);
+}
+
+{
+  assert.deepEqual(requireUserFromSession(toSafeUser(user)), toSafeUser(user));
+
+  const adminUser = { ...toSafeUser(user), role: "admin" as const };
+  assert.deepEqual(requireAdminFromSession(adminUser), adminUser);
+
+  assert.throws(() => requireUserFromSession(null), { status: 401, message: "Authentication required." });
+  assert.throws(() => requireAdminFromSession(toSafeUser(user)), { status: 403, message: "Admin access required." });
+
+  const unauthenticated = authErrorResponse(() => requireUserFromSession(null));
+  assert.equal(unauthenticated.status, 401);
+  assert.deepEqual(await unauthenticated.json(), { error: "Authentication required." });
+
+  const forbidden = authErrorResponse(() => requireAdminFromSession(toSafeUser(user)));
+  assert.equal(forbidden.status, 403);
+  assert.deepEqual(await forbidden.json(), { error: "Admin access required." });
 }
 
 console.log("user auth tests passed");

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { errorResponse } from "@/lib/api-response";
+import { getAuthErrorResponse, requireAdmin } from "@/lib/auth";
 import { id, readData, slugify, writeData } from "@/lib/db";
 import type { Category } from "@/lib/types";
 
@@ -14,6 +15,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    await requireAdmin();
     const body = await request.json();
     if (!body.name || !body.description) {
       return NextResponse.json({ error: "Category name and description are required." }, { status: 400 });
@@ -29,6 +31,8 @@ export async function POST(request: Request) {
     await writeData(data);
     return NextResponse.json(category, { status: 201 });
   } catch (error) {
+    const authResponse = getAuthErrorResponse(error);
+    if (authResponse) return authResponse;
     return errorResponse(error, 500, "Unable to create category.");
   }
 }

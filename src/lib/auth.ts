@@ -1,4 +1,5 @@
 import { timingSafeEqual, createHmac } from "node:crypto";
+import { NextResponse } from "next/server";
 import type { Customer } from "./types";
 import { toSafeUser } from "./user-auth";
 
@@ -20,6 +21,16 @@ type SessionCookieOptions = {
   path: "/";
   maxAge: number;
 };
+
+export class AuthError extends Error {
+  status: 401 | 403;
+
+  constructor(status: 401 | 403, message: string) {
+    super(message);
+    this.name = "AuthError";
+    this.status = status;
+  }
+}
 
 function base64UrlEncode(value: string) {
   return Buffer.from(value, "utf8").toString("base64url");
@@ -110,4 +121,56 @@ export async function verifySessionToken(token: string | undefined | null): Prom
   } catch {
     return null;
   }
+}
+
+export async function getSessionUser(): Promise<Customer | null> {
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+  return verifySessionToken(cookieStore.get(sessionCookieName)?.value);
+}
+
+export function requireUserFromSession(user: Customer | null): Customer {
+  if (!user) {
+    throw new AuthError(401, "Authentication required.");
+  }
+  return user;
+}
+
+export function requireAdminFromSession(user: Customer | null): Customer {
+  const sessionUser = requireUserFromSession(user);
+  if (sessionUser.role !== "admin") {
+    throw new AuthError(403, "Admin access required.");
+  }
+  return sessionUser;
+}
+
+export async function requireUser(): Promise<Customer> {
+  return requireUserFromSession(await getSessionUser());
+}
+
+export async function requireAdmin(): Promise<Customer> {
+  return requireAdminFromSession(await getSessionUser());
+}
+
+export function getAuthErrorResponse(error: unknown) {
+  if (error instanceof AuthError) {
+    return NextResponse.json({ error: error.message }, { status: error.status });
+  }
+  return null;
+}
+
+export function authErrorResponse(error: unknown | (() => unknown)) {
+  try {
+    if (typeof error === "function") {
+      error();
+    } else {
+      throw error;
+    }
+  } catch (caughtError) {
+    const response = getAuthErrorResponse(caughtError);
+    if (response) return response;
+    throw caughtError;
+  }
+
+  throw new Error("Expected an authentication error.");
 }

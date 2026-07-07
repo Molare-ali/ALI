@@ -11,14 +11,16 @@ import { useAuth } from "@/contexts/AuthContext";
 const nav = [
   { href: "/", label: "Home" },
   { href: "/shop", label: "Shop" },
-  { href: "/contact", label: "Contact" },
-  { href: "/admin", label: "Admin" }
+  { href: "/contact", label: "Contact" }
 ];
+
+const adminNavItem = { href: "/admin", label: "Admin" };
 
 export function Header() {
   const [open, setOpen] = useState(false);
   const { count } = useCart();
   const { user, logout } = useAuth();
+  const navItems = user?.role === "admin" ? [...nav, adminNavItem] : nav;
 
   return (
     <header className="sticky top-0 z-40 border-b border-aubergine/25 bg-ivory/90 backdrop-blur-xl">
@@ -28,7 +30,7 @@ export function Header() {
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
-          {nav.map((item) => (
+          {navItems.map((item) => (
             <Link key={item.href} href={item.href} className="fine-label relative text-onyx/75 transition hover:text-aubergine after:absolute after:-bottom-2 after:left-0 after:h-px after:w-0 after:bg-deepPurple after:transition-all hover:after:w-full">
               {item.label}
             </Link>
@@ -67,7 +69,7 @@ export function Header() {
       {open && (
         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden border-t border-aubergine/25 bg-ivory md:hidden">
           <motion.div initial="closed" animate="open" exit="closed" variants={{ open: { transition: { staggerChildren: 0.045 } }, closed: {} }} className="luxury-container grid gap-1 py-4">
-            {nav.map((item) => (
+            {navItems.map((item) => (
               <motion.div key={item.href} variants={{ open: { opacity: 1, y: 0 }, closed: { opacity: 0, y: 8 } }}>
               <Link href={item.href} onClick={() => setOpen(false)} className="block py-3 fine-label text-aubergine">
                 {item.label}

@@ -1,14 +1,18 @@
 import { NextResponse } from "next/server";
 import { errorResponse } from "@/lib/api-response";
+import { getAuthErrorResponse, requireAdmin } from "@/lib/auth";
 import { id, readData, writeData } from "@/lib/db";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import type { Order } from "@/lib/types";
 
 export async function GET() {
   try {
+    await requireAdmin();
     const data = await readData();
     return NextResponse.json(data.orders);
   } catch (error) {
+    const authResponse = getAuthErrorResponse(error);
+    if (authResponse) return authResponse;
     return errorResponse(error, 500, "Unable to load orders.");
   }
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { errorResponse } from "@/lib/api-response";
+import { getAuthErrorResponse, requireAdmin } from "@/lib/auth";
 import { readData, writeData } from "@/lib/db";
 import type { StoreSettings } from "@/lib/types";
 
@@ -14,6 +15,7 @@ export async function GET() {
 
 export async function PUT(request: Request) {
   try {
+    await requireAdmin();
     const body = await request.json();
     if (!body.whatsappNumber || !body.contactPhone || !body.contactEmail || !body.storeAddress) {
       return NextResponse.json({ error: "WhatsApp number, contact phone, contact email, and store address are required." }, { status: 400 });
@@ -32,6 +34,8 @@ export async function PUT(request: Request) {
     await writeData(data);
     return NextResponse.json(data.settings);
   } catch (error) {
+    const authResponse = getAuthErrorResponse(error);
+    if (authResponse) return authResponse;
     return errorResponse(error, 500, "Unable to save settings.");
   }
 }

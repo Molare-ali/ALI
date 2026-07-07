@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import { errorResponse } from "@/lib/api-response";
+import { getAuthErrorResponse, requireAdmin } from "@/lib/auth";
 import { buildProductImagePath, productImageBucket, validateProductImageFile } from "@/lib/product-image-upload";
 import { supabase } from "@/lib/supabase/server";
 
 export async function POST(request: Request) {
   try {
+    await requireAdmin();
     const formData = await request.formData();
     const validation = validateProductImageFile(formData.get("file"));
 
@@ -27,6 +29,8 @@ export async function POST(request: Request) {
     const { data } = supabase.storage.from(productImageBucket).getPublicUrl(filePath);
     return NextResponse.json({ url: data.publicUrl });
   } catch (error) {
+    const authResponse = getAuthErrorResponse(error);
+    if (authResponse) return authResponse;
     return errorResponse(error, 500, "Unable to upload image.");
   }
 }

@@ -17,8 +17,8 @@ export function getProductVariants(product: Product): ProductVariant[] {
     colorName,
     colorHex: colorName.toLowerCase().includes("aubergine")
       ? "#2D1B3D"
-      : colorName.toLowerCase().includes("champagne")
-        ? "#C9A961"
+      : colorName.toLowerCase().includes("purple") || colorName.toLowerCase().includes("plum")
+        ? "#5A2D82"
         : colorName.toLowerCase().includes("ivory") || colorName.toLowerCase().includes("avorio")
           ? "#F5F1EA"
           : "#1A1A1A",

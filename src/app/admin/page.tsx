@@ -30,18 +30,18 @@ export default async function AdminDashboardPage() {
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px]">
         <AdminSectionCard title="Control Room" eyebrow="Today" description="A quick read on the parts of the store that usually need operational attention.">
           <div className="grid gap-4 sm:grid-cols-3">
-            <div className="border border-champagne/25 bg-linen/25 p-4">
-              <p className="fine-label text-champagne">Featured</p>
+            <div className="border border-aubergine/25 bg-linen/25 p-4">
+              <p className="fine-label text-plum">Featured</p>
               <p className="serif-title mt-3 text-3xl text-aubergine">{featuredProducts}</p>
               <p className="mt-1 text-sm text-onyx/58">Products promoted on the storefront.</p>
             </div>
-            <div className="border border-champagne/25 bg-linen/25 p-4">
-              <p className="fine-label text-champagne">Inactive</p>
+            <div className="border border-aubergine/25 bg-linen/25 p-4">
+              <p className="fine-label text-plum">Inactive</p>
               <p className="serif-title mt-3 text-3xl text-aubergine">{products.length - activeProducts}</p>
               <p className="mt-1 text-sm text-onyx/58">Products hidden from shoppers.</p>
             </div>
-            <div className="border border-champagne/25 bg-linen/25 p-4">
-              <p className="fine-label text-champagne">Open Orders</p>
+            <div className="border border-aubergine/25 bg-linen/25 p-4">
+              <p className="fine-label text-plum">Open Orders</p>
               <p className="serif-title mt-3 text-3xl text-aubergine">{openOrders}</p>
               <p className="mt-1 text-sm text-onyx/58">Not delivered or cancelled.</p>
             </div>
@@ -52,13 +52,13 @@ export default async function AdminDashboardPage() {
           <div className="grid gap-3">
             {latestOrders.length === 0 && <p className="text-sm text-onyx/62">No orders yet.</p>}
             {latestOrders.map((order) => (
-              <div key={order.id} className="grid gap-3 border border-champagne/25 bg-linen/20 p-4">
+              <div key={order.id} className="grid gap-3 border border-aubergine/25 bg-linen/20 p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="fine-label text-champagne">{order.orderNumber}</p>
+                    <p className="fine-label text-plum">{order.orderNumber}</p>
                     <p className="font-semibold text-aubergine">{order.customerName}</p>
                   </div>
-                  <AdminStatusBadge tone={order.status === "Cancelled" ? "red" : order.status === "Delivered" ? "green" : "gold"}>{order.status}</AdminStatusBadge>
+                  <AdminStatusBadge tone={order.status === "Cancelled" ? "red" : order.status === "Delivered" ? "green" : "neutral"}>{order.status}</AdminStatusBadge>
                 </div>
                 <p className="text-sm text-onyx/62">{formatCurrency(order.total)}</p>
               </div>

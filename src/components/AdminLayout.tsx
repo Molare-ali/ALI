@@ -31,12 +31,12 @@ function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="border-b border-champagne/25 bg-aubergine text-ivory lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:border-b-0 lg:border-r">
+    <aside className="border-b border-white/10 bg-aubergine text-ivory lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:border-b-0 lg:border-r">
       <div className="flex min-h-20 items-center justify-between gap-4 px-4 sm:px-6 lg:min-h-0 lg:grid lg:gap-8 lg:px-5 lg:py-6">
         <Link href="/admin" className="inline-flex" aria-label="Molare admin dashboard">
           <Logo compact inverted />
         </Link>
-        <p className="hidden fine-label text-champagne/85 lg:block">Atelier Control</p>
+        <p className="hidden fine-label text-softPurple/85 lg:block">Atelier Control</p>
       </div>
 
       <nav className="flex gap-2 overflow-x-auto px-4 pb-4 sm:px-6 lg:grid lg:overflow-visible lg:px-5 lg:pb-0" aria-label="Admin navigation">
@@ -49,11 +49,11 @@ function AdminSidebar() {
               aria-current={active ? "page" : undefined}
               className={`group flex min-h-12 shrink-0 items-center gap-3 border px-4 text-sm font-semibold transition lg:w-full ${
                 active
-                  ? "border-champagne/60 bg-ivory text-aubergine shadow-gold"
-                  : "border-transparent text-ivory/75 hover:border-champagne/35 hover:bg-ivory/10 hover:text-ivory"
+                  ? "border-white/75 bg-ivory text-aubergine shadow-purple"
+                  : "border-transparent text-ivory/75 hover:border-white/25 hover:bg-ivory/10 hover:text-ivory"
               }`}
             >
-              <Icon size={18} className={active ? "text-champagne" : "text-champagne/80 transition group-hover:text-champagne"} />
+              <Icon size={18} className={active ? "text-deepPurple" : "text-softPurple/80 transition group-hover:text-softPurple"} />
               {label}
             </Link>
           );
@@ -61,8 +61,8 @@ function AdminSidebar() {
       </nav>
 
       <div className="mt-auto hidden px-5 pb-6 lg:block">
-        <div className="border border-champagne/25 bg-ivory/10 p-4">
-          <p className="fine-label text-champagne">Molare Admin</p>
+        <div className="border border-white/15 bg-ivory/10 p-4">
+          <p className="fine-label text-softPurple">Molare Admin</p>
           <p className="mt-3 text-sm leading-6 text-ivory/70">A wider workspace for catalog operations, fulfillment, and store settings.</p>
         </div>
       </div>
@@ -74,17 +74,17 @@ function AdminTopbar({ title }: { title: string }) {
   const { user, logout } = useAuth();
 
   return (
-    <header className="border-b border-champagne/25 bg-ivory/90 px-4 py-4 backdrop-blur sm:px-6 lg:px-8">
+    <header className="border-b border-aubergine/25 bg-ivory/90 px-4 py-4 backdrop-blur sm:px-6 lg:px-8">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="min-w-0">
-          <p className="fine-label text-champagne">Admin Dashboard</p>
+          <p className="fine-label text-plum">Admin Dashboard</p>
           <h1 className="serif-title mt-1 text-4xl leading-tight text-aubergine sm:text-5xl">{title}</h1>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-onyx/62">{subtitles[title] || "Manage the Molare storefront workspace."}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href="/shop"
-            className="inline-flex min-h-11 items-center gap-2 border border-champagne/40 bg-ivory px-4 text-sm font-semibold text-aubergine transition hover:bg-champagne/15"
+            className="inline-flex min-h-11 items-center gap-2 border border-aubergine/40 bg-ivory px-4 text-sm font-semibold text-aubergine transition hover:bg-softPurple/15"
           >
             View Store <ExternalLink size={16} />
           </Link>
@@ -104,7 +104,7 @@ function AdminTopbar({ title }: { title: string }) {
 }
 
 export function AdminCard({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <section className={`border border-champagne/30 bg-ivory shadow-sm ${className}`}>{children}</section>;
+  return <section className={`border border-aubergine/30 bg-ivory shadow-sm ${className}`}>{children}</section>;
 }
 
 export function AdminSectionCard({
@@ -124,9 +124,9 @@ export function AdminSectionCard({
 }) {
   return (
     <AdminCard className={`min-w-0 ${className}`}>
-      <div className="flex flex-wrap items-start justify-between gap-4 border-b border-champagne/25 px-5 py-4 sm:px-6">
+      <div className="flex flex-wrap items-start justify-between gap-4 border-b border-aubergine/25 px-5 py-4 sm:px-6">
         <div className="min-w-0">
-          {eyebrow && <p className="fine-label text-champagne">{eyebrow}</p>}
+          {eyebrow && <p className="fine-label text-plum">{eyebrow}</p>}
           <h2 className="serif-title text-3xl leading-tight text-aubergine">{title}</h2>
           {description && <p className="mt-2 max-w-2xl text-sm leading-6 text-onyx/62">{description}</p>}
         </div>
@@ -151,8 +151,8 @@ export function AdminStatCard({
   return (
     <AdminCard className="grid min-h-36 content-between gap-5 p-5">
       <div className="flex items-start justify-between gap-4">
-        <p className="fine-label text-champagne">{label}</p>
-        {children && <div className="grid h-10 w-10 place-items-center border border-champagne/35 bg-linen/45 text-aubergine">{children}</div>}
+        <p className="fine-label text-plum">{label}</p>
+        {children && <div className="grid h-10 w-10 place-items-center border border-aubergine/35 bg-linen/45 text-aubergine">{children}</div>}
       </div>
       <div>
         <p className="serif-title text-4xl leading-none text-aubergine">{value}</p>
@@ -162,9 +162,9 @@ export function AdminStatCard({
   );
 }
 
-export function AdminStatusBadge({ children, tone = "gold" }: { children: ReactNode; tone?: "gold" | "purple" | "muted" | "green" | "red" }) {
+export function AdminStatusBadge({ children, tone = "neutral" }: { children: ReactNode; tone?: "neutral" | "purple" | "muted" | "green" | "red" }) {
   const styles = {
-    gold: "border-champagne/50 bg-champagne/15 text-aubergine",
+    neutral: "border-aubergine/25 bg-softPurple text-aubergine",
     purple: "border-aubergine/20 bg-aubergine text-ivory",
     muted: "border-smoke bg-linen/70 text-onyx/65",
     green: "border-emerald-300 bg-emerald-50 text-emerald-800",

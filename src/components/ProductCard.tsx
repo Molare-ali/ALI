@@ -16,7 +16,7 @@ export function ProductCard({ product }: { product: Product }) {
   const image = getProductImage(product, selectedVariant);
 
   return (
-    <motion.article whileHover={{ y: -6 }} className="group grid overflow-hidden border border-champagne/25 bg-ivory shadow-sm transition-shadow duration-300 hover:shadow-luxury">
+    <motion.article whileHover={{ y: -6 }} className="group grid overflow-hidden border border-aubergine/25 bg-ivory shadow-sm transition-shadow duration-300 hover:shadow-luxury">
       <Link href={`/product/${product.slug}?variant=${selectedVariant?.id || ""}`} className="relative aspect-[4/5] overflow-hidden bg-linen">
         <motion.img key={image} initial={{ opacity: 0.78, scale: 1.02 }} animate={{ opacity: 1, scale: 1 }} src={image} alt={product.name} className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
         {product.discountPrice && <span className="absolute left-4 top-4 bg-aubergine px-3 py-2 text-xs font-semibold text-ivory">Private Offer</span>}
@@ -27,7 +27,7 @@ export function ProductCard({ product }: { product: Product }) {
             <h3 className="serif-title text-2xl text-aubergine">{product.name}</h3>
             <p className="mt-1 text-sm text-onyx/62">{selectedVariant?.colorName || "Molarè"}</p>
           </div>
-          <ArrowUpRight className="mt-1 text-champagne transition group-hover:translate-x-1 group-hover:-translate-y-1" size={20} />
+          <ArrowUpRight className="mt-1 text-plum transition group-hover:translate-x-1 group-hover:-translate-y-1" size={20} />
         </div>
         {variants.length > 0 && (
           <div className="flex flex-wrap gap-2">
@@ -37,7 +37,7 @@ export function ProductCard({ product }: { product: Product }) {
                 aria-label={`Preview ${variant.colorName}`}
                 onMouseEnter={() => setSelectedVariantId(variant.id)}
                 onClick={() => setSelectedVariantId(variant.id)}
-                className={`h-5 w-5 border transition ${selectedVariant?.id === variant.id ? "border-aubergine ring-2 ring-champagne/45" : "border-champagne/40"}`}
+                className={`h-5 w-5 border transition ${selectedVariant?.id === variant.id ? "border-aubergine ring-2 ring-deepPurple/45" : "border-aubergine/40"}`}
                 style={{ backgroundColor: variant.colorHex }}
               />
             ))}

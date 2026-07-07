@@ -58,7 +58,7 @@ export default function CheckoutPage() {
 
   return (
     <section className="luxury-container py-12">
-      <p className="fine-label text-champagne">Checkout</p>
+      <p className="fine-label text-plum">Checkout</p>
       <h1 className="serif-title mb-8 text-5xl text-aubergine">Complete Your Order</h1>
       <div className="grid gap-8 lg:grid-cols-[1fr_420px]">
         <motion.form
@@ -66,16 +66,16 @@ export default function CheckoutPage() {
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.42 }}
-          className="grid gap-5 border border-champagne/30 bg-ivory p-6 shadow-luxury"
+          className="grid gap-5 border border-aubergine/30 bg-ivory p-6 shadow-luxury"
         >
           <div className="flex items-center gap-2 text-sm text-aubergine">
             {["Details", "Invoice", "WhatsApp"].map((step, index) => (
               <div key={step} className="flex items-center gap-2">
-                <motion.span initial={{ scale: 0.82 }} animate={{ scale: 1 }} transition={{ delay: index * 0.08 }} className="grid h-7 w-7 place-items-center border border-champagne/50 text-xs">
+                <motion.span initial={{ scale: 0.82 }} animate={{ scale: 1 }} transition={{ delay: index * 0.08 }} className="grid h-7 w-7 place-items-center border border-aubergine/50 text-xs">
                   {index + 1}
                 </motion.span>
                 <span className="fine-label hidden sm:inline">{step}</span>
-                {index < 2 && <span className="h-px w-8 bg-champagne/45" />}
+                {index < 2 && <span className="h-px w-8 bg-deepPurple/35" />}
               </div>
             ))}
           </div>

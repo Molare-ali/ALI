@@ -4,7 +4,7 @@
 
 :root {
   color: #1a1a1a;
-  background: #f5f1ea;
+  background: #f7f5f2;
 }
 
 * {
@@ -18,8 +18,8 @@ html {
 body {
   margin: 0;
   background:
-    radial-gradient(circle at top left, rgba(201, 169, 97, 0.13), transparent 28rem),
-    linear-gradient(180deg, #f5f1ea 0%, #eee5d8 100%);
+    radial-gradient(circle at top left, rgba(90, 45, 130, 0.12), transparent 28rem),
+    linear-gradient(180deg, #f7f5f2 0%, #eee7f4 100%);
   color: #1a1a1a;
   font-family: Inter, "Segoe UI", Arial, sans-serif;
 }
@@ -58,15 +58,15 @@ select {
 }
 
 .glass-panel {
-  background: rgba(245, 241, 234, 0.82);
-  border: 1px solid rgba(201, 169, 97, 0.28);
+  background: rgba(247, 245, 242, 0.86);
+  border: 1px solid rgba(45, 27, 61, 0.18);
   box-shadow: 0 22px 70px rgba(45, 27, 61, 0.12);
   backdrop-filter: blur(18px);
 }
 
-.gold-line {
+.brand-line {
   height: 1px;
-  background: linear-gradient(90deg, transparent, #c9a961, transparent);
+  background: linear-gradient(90deg, transparent, #5a2d82, transparent);
 }
 
 body:has(.admin-route) > header,
@@ -81,7 +81,7 @@ body:has(.admin-route) main {
 .skeleton {
   position: relative;
   overflow: hidden;
-  background: rgba(215, 201, 188, 0.42);
+  background: rgba(216, 210, 221, 0.58);
 }
 
 .skeleton::after {
@@ -89,7 +89,7 @@ body:has(.admin-route) main {
   inset: 0;
   content: "";
   transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgba(245, 241, 234, 0.72), transparent);
+  background: linear-gradient(90deg, transparent, rgba(247, 245, 242, 0.78), transparent);
   animation: skeleton-shimmer 1.35s ease-in-out infinite;
 }
 

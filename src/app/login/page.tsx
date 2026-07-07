@@ -30,7 +30,7 @@ function LoginForm() {
     <section className="luxury-container grid min-h-[70vh] place-items-center py-12">
       <form onSubmit={submit} className="glass-panel grid w-full max-w-lg gap-5 p-8">
         <div>
-          <p className="fine-label text-champagne">Customer Access</p>
+          <p className="fine-label text-plum">Customer Access</p>
           <h1 className="serif-title text-5xl text-aubergine">Log in</h1>
           <p className="mt-3 text-sm text-onyx/64">Please log in or create an account to complete your order.</p>
         </div>

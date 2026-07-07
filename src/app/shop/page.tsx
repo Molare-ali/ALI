@@ -11,14 +11,14 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
     <section className="luxury-container py-12">
       <div className="mb-10 grid gap-5 md:grid-cols-[1fr_auto] md:items-end">
         <div>
-          <p className="fine-label text-champagne">Shop Collection</p>
+          <p className="fine-label text-plum">Shop Collection</p>
           <h1 className="serif-title text-5xl text-aubergine">{selected ? selected.name : "All Clothing"}</h1>
           <p className="mt-3 max-w-2xl text-onyx/68">Browse premium pieces as a guest. Login is only required when you are ready to place your order.</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <a href="/shop" className="border border-champagne/40 px-4 py-3 text-sm text-aubergine transition hover:bg-champagne/15">All</a>
+          <a href="/shop" className="border border-aubergine/40 px-4 py-3 text-sm text-aubergine transition hover:bg-softPurple/15">All</a>
           {categories.map((item) => (
-            <a key={item.id} href={`/shop?category=${item.slug}`} className="border border-champagne/40 px-4 py-3 text-sm text-aubergine transition hover:bg-champagne/15">{item.name}</a>
+            <a key={item.id} href={`/shop?category=${item.slug}`} className="border border-aubergine/40 px-4 py-3 text-sm text-aubergine transition hover:bg-softPurple/15">{item.name}</a>
           ))}
         </div>
       </div>

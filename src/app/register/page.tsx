@@ -35,7 +35,7 @@ function RegisterForm() {
     <section className="luxury-container grid min-h-[70vh] place-items-center py-12">
       <form onSubmit={submit} className="glass-panel grid w-full max-w-lg gap-5 p-8">
         <div>
-          <p className="fine-label text-champagne">Join Molarè</p>
+          <p className="fine-label text-plum">Join Molarè</p>
           <h1 className="serif-title text-5xl text-aubergine">Create account</h1>
         </div>
         {error && <p className="border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}

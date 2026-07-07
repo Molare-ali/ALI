@@ -4,7 +4,7 @@ import { Facebook, Instagram, Music2, Send } from "lucide-react";
 import { motion } from "framer-motion";
 import type { StoreSettings } from "@/lib/types";
 
-export function SocialLinks({ settings }: { settings: StoreSettings }) {
+export function SocialLinks({ settings, inverted = false }: { settings: StoreSettings; inverted?: boolean }) {
   const links = [
     { href: settings.instagramLink, label: "Instagram", Icon: Instagram },
     { href: settings.facebookLink, label: "Facebook", Icon: Facebook },
@@ -25,7 +25,11 @@ export function SocialLinks({ settings }: { settings: StoreSettings }) {
           rel="noreferrer"
           whileHover={{ y: -3, scale: 1.03 }}
           whileTap={{ scale: 0.96 }}
-          className="grid h-10 w-10 place-items-center border border-champagne/45 text-aubergine transition hover:bg-aubergine hover:text-ivory"
+          className={`grid h-10 w-10 place-items-center border transition ${
+            inverted
+              ? "border-ivory/35 text-ivory hover:bg-ivory hover:text-aubergine"
+              : "border-aubergine/45 text-aubergine hover:bg-aubergine hover:text-ivory"
+          }`}
         >
           <Icon size={18} />
         </motion.a>

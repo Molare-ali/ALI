@@ -21,7 +21,7 @@ export function Header() {
   const { user, logout } = useAuth();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-champagne/25 bg-ivory/90 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-aubergine/25 bg-ivory/90 backdrop-blur-xl">
       <div className="luxury-container flex min-h-20 items-center justify-between gap-6">
         <Link href="/" aria-label="Molarè home">
           <Logo compact />
@@ -29,7 +29,7 @@ export function Header() {
 
         <nav className="hidden items-center gap-8 md:flex">
           {nav.map((item) => (
-            <Link key={item.href} href={item.href} className="fine-label relative text-onyx/75 transition hover:text-aubergine after:absolute after:-bottom-2 after:left-0 after:h-px after:w-0 after:bg-champagne after:transition-all hover:after:w-full">
+            <Link key={item.href} href={item.href} className="fine-label relative text-onyx/75 transition hover:text-aubergine after:absolute after:-bottom-2 after:left-0 after:h-px after:w-0 after:bg-deepPurple after:transition-all hover:after:w-full">
               {item.label}
             </Link>
           ))}
@@ -37,7 +37,7 @@ export function Header() {
 
         <div className="flex items-center gap-2">
           <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.96 }}>
-          <Link href="/cart" aria-label="Cart" className="relative grid h-11 w-11 place-items-center border border-champagne/30 text-aubergine transition hover:bg-champagne/15">
+          <Link href="/cart" aria-label="Cart" className="relative grid h-11 w-11 place-items-center border border-aubergine/30 text-aubergine transition hover:bg-softPurple/15">
             <ShoppingBag size={19} />
             <AnimatePresence>
               {count > 0 && (
@@ -49,15 +49,15 @@ export function Header() {
           </Link>
           </motion.div>
           {user ? (
-            <button onClick={logout} className="hidden min-h-11 border border-champagne/30 px-4 text-sm text-aubergine transition hover:bg-champagne/15 sm:inline-flex">
+            <button onClick={logout} className="hidden min-h-11 border border-aubergine/30 px-4 text-sm text-aubergine transition hover:bg-softPurple/15 sm:inline-flex">
               Sign out
             </button>
           ) : (
-            <Link href="/login" aria-label="Login" className="hidden h-11 w-11 place-items-center border border-champagne/30 text-aubergine transition hover:bg-champagne/15 sm:grid">
+            <Link href="/login" aria-label="Login" className="hidden h-11 w-11 place-items-center border border-aubergine/30 text-aubergine transition hover:bg-softPurple/15 sm:grid">
               <UserRound size={18} />
             </Link>
           )}
-          <button onClick={() => setOpen((value) => !value)} className="grid h-11 w-11 place-items-center border border-champagne/30 text-aubergine md:hidden" aria-label="Menu">
+          <button onClick={() => setOpen((value) => !value)} className="grid h-11 w-11 place-items-center border border-aubergine/30 text-aubergine md:hidden" aria-label="Menu">
             {open ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
@@ -65,7 +65,7 @@ export function Header() {
 
       <AnimatePresence>
       {open && (
-        <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden border-t border-champagne/25 bg-ivory md:hidden">
+        <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden border-t border-aubergine/25 bg-ivory md:hidden">
           <motion.div initial="closed" animate="open" exit="closed" variants={{ open: { transition: { staggerChildren: 0.045 } }, closed: {} }} className="luxury-container grid gap-1 py-4">
             {nav.map((item) => (
               <motion.div key={item.href} variants={{ open: { opacity: 1, y: 0 }, closed: { opacity: 0, y: 8 } }}>

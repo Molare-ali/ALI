@@ -11,7 +11,7 @@ import { useCart } from "@/contexts/CartContext";
 
 export default function CheckoutPage() {
   const { user, isLoading } = useAuth();
-  const { items, total, clearCart } = useCart();
+  const { items, clearCart } = useCart();
   const router = useRouter();
   const [error, setError] = useState("");
 
@@ -36,14 +36,11 @@ export default function CheckoutPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        customerId: user.id,
-        customerName: String(form.get("fullName")),
         customerPhone: String(form.get("phone")),
         city: String(form.get("city")),
         address: String(form.get("address")),
         notes: String(form.get("notes") || ""),
-        items,
-        total
+        items
       })
     });
     const data = await response.json();

@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { errorResponse } from "@/lib/api-response";
-import { getAuthErrorResponse, requireAdmin } from "@/lib/auth";
+import { getAuthErrorResponse, requireAdmin, requireUser } from "@/lib/auth";
 import { id, readData, writeData } from "@/lib/db";
+import { buildOwnedOrderItems } from "@/lib/order-security";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import type { Order } from "@/lib/types";
 
@@ -19,28 +20,30 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const user = await requireUser();
     const body = await request.json();
-    if (!body.customerName || !body.customerPhone || !body.city || !body.address || !Array.isArray(body.items) || !body.items.length) {
-      return NextResponse.json({ error: "Customer details and at least one cart item are required." }, { status: 400 });
-    }
-
-    const total = Number(body.total || 0);
-    if (!Number.isFinite(total) || total < 0) {
-      return NextResponse.json({ error: "Order total must be a valid non-negative number." }, { status: 400 });
+    if (!body.customerPhone || !body.city || !body.address) {
+      return NextResponse.json({ error: "Customer phone, city, and address are required." }, { status: 400 });
     }
 
     const data = await readData();
+    const orderItems = buildOwnedOrderItems(data.products, body.items);
+    if (!orderItems.ok) {
+      return NextResponse.json({ error: orderItems.error }, { status: 400 });
+    }
+
+    const customerPhone = String(body.customerPhone || user.phone || "");
     const order: Order = {
       id: id("order"),
       orderNumber: `MOL-${new Date().getFullYear()}-${String(data.orders.length + 1).padStart(4, "0")}`,
-      customerId: String(body.customerId || ""),
-      customerName: String(body.customerName),
-      customerPhone: String(body.customerPhone),
+      customerId: user.id,
+      customerName: user.fullName,
+      customerPhone,
       city: String(body.city),
       address: String(body.address),
       notes: String(body.notes || ""),
-      items: body.items,
-      total,
+      items: orderItems.items,
+      total: orderItems.total,
       status: "Pending",
       createdAt: new Date().toISOString()
     };
@@ -49,6 +52,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ order, whatsappLink: buildWhatsAppLink(data.settings, order) }, { status: 201 });
   } catch (error) {
+    const authResponse = getAuthErrorResponse(error);
+    if (authResponse) return authResponse;
     return errorResponse(error, 500, "Unable to create order.");
   }
 }

@@ -50,6 +50,11 @@ export function Header() {
             </AnimatePresence>
           </Link>
           </motion.div>
+          {user && (
+            <Link href="/account" aria-label="Account" className="hidden h-11 w-11 place-items-center border border-aubergine/30 text-aubergine transition hover:bg-softPurple/15 sm:grid">
+              <UserRound size={18} />
+            </Link>
+          )}
           {user ? (
             <button onClick={logout} className="hidden min-h-11 border border-aubergine/30 px-4 text-sm text-aubergine transition hover:bg-softPurple/15 sm:inline-flex">
               Sign out
@@ -76,6 +81,13 @@ export function Header() {
               </Link>
               </motion.div>
             ))}
+            <motion.div variants={{ open: { opacity: 1, y: 0 }, closed: { opacity: 0, y: 8 } }}>
+            {user && (
+              <Link href="/account" onClick={() => setOpen(false)} className="block py-3 fine-label text-aubergine">
+                Account
+              </Link>
+            )}
+            </motion.div>
             <motion.div variants={{ open: { opacity: 1, y: 0 }, closed: { opacity: 0, y: 8 } }}>
             <Link href={user ? "/checkout" : "/login?redirect=/checkout"} onClick={() => setOpen(false)} className="block py-3 fine-label text-aubergine">
               {user ? "Checkout" : "Login"}

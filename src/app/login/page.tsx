@@ -6,6 +6,13 @@ import { FormEvent, Suspense, useState } from "react";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { useAuth } from "@/contexts/AuthContext";
+import type { Customer } from "@/lib/types";
+
+function nextRedirectPath(redirect: string, user: Customer) {
+  if (!redirect.startsWith("/")) return "/checkout";
+  if (redirect.startsWith("/admin") && user.role !== "admin") return "/checkout";
+  return redirect;
+}
 
 function LoginForm() {
   const { login } = useAuth();
@@ -20,11 +27,7 @@ function LoginForm() {
     const form = new FormData(event.currentTarget);
     try {
       const user = await login(String(form.get("email")), String(form.get("password")));
-      if (redirect.startsWith("/admin") && user.role !== "admin") {
-        router.push("/checkout");
-        return;
-      }
-      router.push(redirect);
+      router.push(nextRedirectPath(redirect, user));
     } catch (issue) {
       setError(issue instanceof Error ? issue.message : "Login failed");
     }

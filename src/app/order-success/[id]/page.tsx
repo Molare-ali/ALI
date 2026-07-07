@@ -1,14 +1,20 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Button } from "@/components/Button";
 import { OrderSummary } from "@/components/OrderSummary";
+import { getSessionUser } from "@/lib/auth";
 import { readData } from "@/lib/db";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 
 export default async function OrderSuccessPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const user = await getSessionUser();
+  if (!user) redirect(`/login?redirect=${encodeURIComponent(`/order-success/${id}`)}`);
+
   const { orders, settings } = await readData();
   const order = orders.find((item) => item.id === id);
   if (!order) notFound();
+  if (user.role !== "admin" && order.customerId !== user.id) notFound();
+
   const whatsappLink = buildWhatsAppLink(settings, order);
 
   return (

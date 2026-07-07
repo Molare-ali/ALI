@@ -6,6 +6,13 @@ import { FormEvent, Suspense, useState } from "react";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { useAuth } from "@/contexts/AuthContext";
+import type { Customer } from "@/lib/types";
+
+function nextRedirectPath(redirect: string, user: Customer) {
+  if (!redirect.startsWith("/")) return "/checkout";
+  if (redirect.startsWith("/admin") && user.role !== "admin") return "/checkout";
+  return redirect;
+}
 
 function RegisterForm() {
   const { register } = useAuth();
@@ -19,13 +26,13 @@ function RegisterForm() {
     setError("");
     const form = new FormData(event.currentTarget);
     try {
-      await register({
+      const user = await register({
         fullName: String(form.get("fullName")),
         email: String(form.get("email")),
         phone: String(form.get("phone")),
         password: String(form.get("password"))
       });
-      router.push(redirect);
+      router.push(nextRedirectPath(redirect, user));
     } catch (issue) {
       setError(issue instanceof Error ? issue.message : "Registration failed");
     }

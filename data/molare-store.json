@@ -326,7 +326,7 @@
       "email": "admin@molare.test",
       "phone": "+963000000000",
       "role": "admin",
-      "password": "admin123"
+      "passwordHash": "$2b$10$1Gx72OCJdJd4qve.ws3iQ.SZwpmCAg1ZdkW5H3/FOiE0Vv1LG4Rc6"
     }
   ],
   "orders": [],

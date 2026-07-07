@@ -87,7 +87,7 @@ export type StoreSettings = {
 export type StoreData = {
   products: Product[];
   categories: Category[];
-  users: Array<Customer & { password: string }>;
+  users: Customer[];
   orders: Order[];
   settings: StoreSettings;
 };

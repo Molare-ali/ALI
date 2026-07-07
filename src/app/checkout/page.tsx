@@ -10,14 +10,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 
 export default function CheckoutPage() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const { items, total, clearCart } = useCart();
   const router = useRouter();
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!user) router.replace("/login?redirect=/checkout");
-  }, [router, user]);
+    if (!isLoading && !user) router.replace("/login?redirect=/checkout");
+  }, [isLoading, router, user]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

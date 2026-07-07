@@ -2,9 +2,17 @@ import { loadEnvConfig } from "@next/env";
 import { createClient } from "@supabase/supabase-js";
 import { promises as fs } from "fs";
 import path from "path";
-import type { CartItem, Category, Order, Product, ProductVariant, StoreData, StoreSettings } from "../src/lib/types";
+import { hashPassword } from "../src/lib/user-auth";
+import type { CartItem, Category, Customer, Order, Product, ProductVariant, StoreData, StoreSettings } from "../src/lib/types";
 
-type JsonUser = StoreData["users"][number];
+type JsonUser = Customer & {
+  password?: string;
+  passwordHash?: string;
+};
+
+type JsonStoreData = Omit<StoreData, "users"> & {
+  users: JsonUser[];
+};
 
 type Summary = {
   categories: number;
@@ -137,7 +145,11 @@ function validateUser(user: JsonUser, index: number) {
   if (user.role !== "customer" && user.role !== "admin") {
     throw new Error(`${pathName}.role must be "customer" or "admin".`);
   }
-  assertString(user.password, `${pathName}.password`);
+  if (!user.passwordHash && !user.password) {
+    throw new Error(`${pathName}.passwordHash is required.`);
+  }
+  assertOptionalString(user.passwordHash, `${pathName}.passwordHash`);
+  assertOptionalString(user.password, `${pathName}.password`);
 }
 
 function validateOrderItem(item: CartItem, orderIndex: number, itemIndex: number) {
@@ -188,7 +200,7 @@ function validateSettings(settings: StoreSettings) {
   assertOptionalString(settings.snapchatLink, "settings.snapchatLink");
 }
 
-function validateStoreData(data: StoreData) {
+function validateStoreData(data: JsonStoreData) {
   assertObject(data, "data");
   assertArray(data.categories, "categories");
   assertArray(data.products, "products");
@@ -303,7 +315,7 @@ async function insertOrderItems(rows: Record<string, unknown>[]) {
 async function main() {
   const dataPath = path.join(process.cwd(), "data", "molare-store.json");
   const raw = await fs.readFile(dataPath, "utf8");
-  const data = JSON.parse(raw) as StoreData;
+  const data = JSON.parse(raw) as JsonStoreData;
   validateStoreData(data);
 
   const summary: Summary = {
@@ -364,16 +376,20 @@ async function main() {
     )
   );
 
-  await upsertOrThrow(
-    "users",
-    data.users.map((user) => ({
+  const userRows = await Promise.all(
+    data.users.map(async (user) => ({
       id: user.id,
       full_name: user.fullName,
       email: user.email.toLowerCase(),
       phone: user.phone || null,
       role: user.role,
-      password: user.password
+      password_hash: user.passwordHash || (await hashPassword(user.password || ""))
     }))
+  );
+
+  await upsertOrThrow(
+    "users",
+    userRows
   );
 
   await upsertOrThrow(

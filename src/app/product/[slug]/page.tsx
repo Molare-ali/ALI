@@ -2,6 +2,9 @@ import { notFound } from "next/navigation";
 import { readData } from "@/lib/db";
 import { ProductDetailClient } from "@/components/ProductDetailClient";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function ProductPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ variant?: string }> }) {
   const { slug } = await params;
   const { variant } = await searchParams;

@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, ShoppingBag, UserRound, X } from "lucide-react";
+import { LogOut, Menu, ShoppingBag, UserRound, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "./Logo";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -16,11 +17,27 @@ const nav = [
 
 const adminNavItem = { href: "/admin", label: "Admin" };
 
+function isProtectedPath(pathname: string) {
+  return pathname.startsWith("/admin") || pathname.startsWith("/account") || pathname.startsWith("/checkout");
+}
+
 export function Header() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
   const { count } = useCart();
   const { user, logout } = useAuth();
   const navItems = user?.role === "admin" ? [...nav, adminNavItem] : nav;
+
+  async function handleLogout() {
+    await logout();
+    setOpen(false);
+    if (isProtectedPath(pathname)) {
+      router.replace("/login");
+    } else {
+      router.refresh();
+    }
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-aubergine/25 bg-ivory/90 backdrop-blur-xl">
@@ -56,8 +73,14 @@ export function Header() {
             </Link>
           )}
           {user ? (
-            <button onClick={logout} className="hidden min-h-11 border border-aubergine/30 px-4 text-sm text-aubergine transition hover:bg-softPurple/15 sm:inline-flex">
-              Sign out
+            <button
+              type="button"
+              onClick={handleLogout}
+              aria-label="Sign out"
+              title="Sign out"
+              className="hidden h-11 w-11 place-items-center border border-aubergine/30 text-aubergine transition hover:bg-softPurple/15 sm:grid"
+            >
+              <LogOut size={18} />
             </button>
           ) : (
             <Link href="/login" aria-label="Login" className="hidden h-11 w-11 place-items-center border border-aubergine/30 text-aubergine transition hover:bg-softPurple/15 sm:grid">
@@ -89,10 +112,23 @@ export function Header() {
             )}
             </motion.div>
             <motion.div variants={{ open: { opacity: 1, y: 0 }, closed: { opacity: 0, y: 8 } }}>
-            <Link href={user ? "/checkout" : "/login?redirect=/checkout"} onClick={() => setOpen(false)} className="block py-3 fine-label text-aubergine">
-              {user ? "Checkout" : "Login"}
-            </Link>
+            {user ? (
+              <Link href="/checkout" onClick={() => setOpen(false)} className="block py-3 fine-label text-aubergine">
+                Checkout
+              </Link>
+            ) : (
+              <Link href="/login" onClick={() => setOpen(false)} className="block py-3 fine-label text-aubergine">
+                Login
+              </Link>
+            )}
             </motion.div>
+            {user && (
+              <motion.div variants={{ open: { opacity: 1, y: 0 }, closed: { opacity: 0, y: 8 } }}>
+                <button type="button" onClick={handleLogout} className="block w-full py-3 text-left fine-label text-aubergine">
+                  Sign out
+                </button>
+              </motion.div>
+            )}
           </motion.div>
         </motion.div>
       )}

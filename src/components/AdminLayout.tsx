@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ExternalLink, LayoutDashboard, LogOut, Package, ReceiptText, Settings, Tags } from "lucide-react";
 import type { ReactNode } from "react";
 import { Logo } from "@/components/Logo";
@@ -72,6 +72,13 @@ function AdminSidebar() {
 
 function AdminTopbar({ title }: { title: string }) {
   const { user, logout } = useAuth();
+  const router = useRouter();
+
+  async function handleLogout() {
+    await logout();
+    router.replace("/login");
+    router.refresh();
+  }
 
   return (
     <header className="border-b border-aubergine/25 bg-ivory/90 px-4 py-4 backdrop-blur sm:px-6 lg:px-8">
@@ -91,7 +98,7 @@ function AdminTopbar({ title }: { title: string }) {
           {user && (
             <button
               type="button"
-              onClick={logout}
+              onClick={handleLogout}
               className="inline-flex min-h-11 items-center gap-2 border border-aubergine/20 bg-aubergine px-4 text-sm font-semibold text-ivory transition hover:bg-plum"
             >
               <LogOut size={16} /> Sign Out

@@ -6,19 +6,13 @@ import { FormEvent, Suspense, useState } from "react";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { useAuth } from "@/contexts/AuthContext";
-import type { Customer } from "@/lib/types";
-
-function nextRedirectPath(redirect: string, user: Customer) {
-  if (!redirect.startsWith("/")) return "/checkout";
-  if (redirect.startsWith("/admin") && user.role !== "admin") return "/checkout";
-  return redirect;
-}
+import { resolveRegisterRedirect } from "@/lib/auth-redirects";
 
 function RegisterForm() {
   const { register } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/checkout";
+  const redirect = searchParams.get("redirect");
   const [error, setError] = useState("");
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -32,7 +26,7 @@ function RegisterForm() {
         phone: String(form.get("phone")),
         password: String(form.get("password"))
       });
-      router.push(nextRedirectPath(redirect, user));
+      router.push(resolveRegisterRedirect(redirect, user));
     } catch (issue) {
       setError(issue instanceof Error ? issue.message : "Registration failed");
     }
@@ -51,7 +45,7 @@ function RegisterForm() {
         <Input label="Phone" name="phone" />
         <Input label="Password" name="password" type="password" required minLength={6} />
         <Button type="submit">Create account</Button>
-        <p className="text-sm text-onyx/66">Already registered? <Link className="font-semibold text-aubergine" href={`/login?redirect=${encodeURIComponent(redirect)}`}>Log in</Link></p>
+        <p className="text-sm text-onyx/66">Already registered? <Link className="font-semibold text-aubergine" href={redirect ? `/login?redirect=${encodeURIComponent(redirect)}` : "/login"}>Log in</Link></p>
       </form>
     </section>
   );

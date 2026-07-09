@@ -6,19 +6,13 @@ import { FormEvent, Suspense, useState } from "react";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { useAuth } from "@/contexts/AuthContext";
-import type { Customer } from "@/lib/types";
-
-function nextRedirectPath(redirect: string, user: Customer) {
-  if (!redirect.startsWith("/")) return "/checkout";
-  if (redirect.startsWith("/admin") && user.role !== "admin") return "/checkout";
-  return redirect;
-}
+import { resolveLoginRedirect } from "@/lib/auth-redirects";
 
 function LoginForm() {
   const { login } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/checkout";
+  const redirect = searchParams.get("redirect");
   const [error, setError] = useState("");
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -27,7 +21,7 @@ function LoginForm() {
     const form = new FormData(event.currentTarget);
     try {
       const user = await login(String(form.get("email")), String(form.get("password")));
-      router.push(nextRedirectPath(redirect, user));
+      router.push(resolveLoginRedirect(redirect, user));
     } catch (issue) {
       setError(issue instanceof Error ? issue.message : "Login failed");
     }
@@ -45,7 +39,7 @@ function LoginForm() {
         <Input label="Email" name="email" type="email" required />
         <Input label="Password" name="password" type="password" required />
         <Button type="submit">Log in</Button>
-        <p className="text-sm text-onyx/66">New to Molarè? <Link className="font-semibold text-aubergine" href={`/register?redirect=${encodeURIComponent(redirect)}`}>Create an account</Link></p>
+        <p className="text-sm text-onyx/66">New to Molarè? <Link className="font-semibold text-aubergine" href={redirect ? `/register?redirect=${encodeURIComponent(redirect)}` : "/register"}>Create an account</Link></p>
       </form>
     </section>
   );

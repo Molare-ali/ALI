@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 
-const requestedLogo = "/brand/molare-logo-new.jpg";
-const availableLogo = "/brand/molare-logo-new.png";
+const logoPng = "/brand/molare-logo-new.png";
+const fallbackLogo = "/brand/molare-logo.svg";
 
 export function Logo({ compact = false, inverted = false }: { compact?: boolean; inverted?: boolean }) {
-  const [logoSrc, setLogoSrc] = useState(requestedLogo);
+  const [logoSrc, setLogoSrc] = useState(logoPng);
 
   return (
     <div className="flex items-center gap-3">
@@ -18,8 +18,10 @@ export function Logo({ compact = false, inverted = false }: { compact?: boolean;
         <img
           src={logoSrc}
           alt="Molare logo"
-          onError={() => setLogoSrc(availableLogo)}
-          className="h-full w-full object-cover"
+          onError={() => {
+            if (logoSrc !== fallbackLogo) setLogoSrc(fallbackLogo);
+          }}
+          className="h-full w-full object-contain p-1"
         />
       </div>
       <span className={`serif-title ${inverted ? "text-ivory" : "text-aubergine"} ${compact ? "text-2xl" : "text-3xl"}`}>Molarè</span>

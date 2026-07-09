@@ -1,33 +1,37 @@
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
-import { readData } from "@/lib/db";
+import { getHomepageContent, readData } from "@/lib/db";
 import { ProductCard } from "@/components/ProductCard";
 import { Button } from "@/components/Button";
 import { Reveal } from "@/components/Reveal";
 
+const defaultHeroImageUrl = "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=1800&q=85";
+
 export default async function HomePage() {
-  const { products, categories } = await readData();
+  const [{ products, categories }, homepageContent] = await Promise.all([readData(), getHomepageContent()]);
   const featured = products.filter((product) => product.featured && product.active).slice(0, 3);
+  const heroImageUrl = homepageContent.heroImageUrl || defaultHeroImageUrl;
+  const heroFeatures = [homepageContent.feature1Text, homepageContent.feature2Text, homepageContent.feature3Text];
 
   return (
     <>
       <section className="relative overflow-hidden bg-aubergine text-ivory">
         <div className="absolute inset-0 opacity-42">
-          <img src="https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=1800&q=85" alt="Molarè tailoring mood" className="h-full w-full object-cover" />
+          <img src={heroImageUrl} alt="Molarè tailoring mood" className="h-full w-full object-cover" />
         </div>
         <div className="absolute inset-0 bg-gradient-to-r from-aubergine via-aubergine/88 to-plum/42" />
         <div className="luxury-container relative grid min-h-[calc(100vh-80px)] content-center gap-8 py-20">
           <Reveal className="max-w-3xl">
-            <p className="fine-label mb-5 text-softPurple">Luxury Italian Sartorial Fashion</p>
-            <h1 className="serif-title text-5xl leading-tight text-ivory sm:text-7xl">Refined Clothing for a Modern Wardrobe</h1>
-            <p className="mt-6 max-w-xl text-lg leading-8 text-ivory/78">Sartorial elegance, polished into character.</p>
+            <p className="fine-label mb-5 text-softPurple">{homepageContent.heroKicker}</p>
+            <h1 className="serif-title text-5xl leading-tight text-ivory sm:text-7xl">{homepageContent.heroTitle}</h1>
+            <p className="mt-6 max-w-xl text-lg leading-8 text-ivory/78">{homepageContent.heroSubtitle}</p>
             <div className="mt-9 flex flex-wrap gap-4">
-              <Button href="/shop">Shop Collection <ArrowRight size={18} /></Button>
-              <Button href="/contact" variant="secondary" className="border-ivory/70 text-ivory hover:bg-ivory/10">Contact Us</Button>
+              <Button href={homepageContent.primaryCtaHref}>{homepageContent.primaryCtaLabel} <ArrowRight size={18} /></Button>
+              <Button href={homepageContent.secondaryCtaHref} variant="secondary" className="border-ivory/70 text-ivory hover:bg-ivory/10">{homepageContent.secondaryCtaLabel}</Button>
             </div>
           </Reveal>
           <Reveal delay={0.12} className="mt-10 grid max-w-4xl grid-cols-1 border-y border-ivory/25 py-5 sm:grid-cols-3">
-            {["Aubergine tailoring", "Purple accents", "Clean ivory restraint"].map((item) => (
+            {heroFeatures.map((item) => (
               <div key={item} className="flex items-center gap-3 py-2 text-sm text-ivory/84">
                 <Sparkles size={16} className="text-softPurple" />
                 <span>{item}</span>

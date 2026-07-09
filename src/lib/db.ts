@@ -1,7 +1,14 @@
 import { normalizeVariants } from "./product-utils";
 import { supabase } from "./supabase/server";
 import type { UserAuthRecord } from "./user-auth";
-import type { CartItem, Category, Order, OrderStatus, Product, ProductVariant, StoreData, StoreSettings } from "./types";
+import {
+  defaultHomepageContent,
+  homepageContentRow,
+  mapHomepageContent,
+  normalizeHomepageContentInput,
+  type DbHomepageContent
+} from "./homepage-content";
+import type { CartItem, Category, HomepageContent, Order, OrderStatus, Product, ProductVariant, StoreData, StoreSettings } from "./types";
 
 type DbCategory = {
   id: string;
@@ -108,6 +115,11 @@ function fail(operation: string, error: { message: string; details?: string | nu
   if (!error) return;
   const details = error.details ? ` ${error.details}` : "";
   throw new Error(`Supabase ${operation} failed: ${error.message}.${details}`);
+}
+
+function isMissingRelationError(error: { code?: string; message?: string } | null) {
+  const message = error?.message?.toLowerCase() || "";
+  return error?.code === "42P01" || message.includes("does not exist") || message.includes("could not find the table");
 }
 
 function asNumber(value: number | string | null | undefined) {
@@ -292,6 +304,36 @@ function settingsRow(settings: StoreSettings) {
     tiktok_link: settings.tiktokLink,
     snapchat_link: settings.snapchatLink
   };
+}
+
+export async function getHomepageContent(): Promise<HomepageContent> {
+  const { data, error } = await supabase
+    .from("homepage_content")
+    .select(
+      "id, hero_image_url, hero_kicker, hero_title, hero_subtitle, primary_cta_label, primary_cta_href, secondary_cta_label, secondary_cta_href, feature_1_text, feature_2_text, feature_3_text, updated_at"
+    )
+    .eq("id", "default")
+    .maybeSingle();
+
+  if (isMissingRelationError(error)) return defaultHomepageContent;
+  fail("select homepage_content", error);
+  return mapHomepageContent((data as DbHomepageContent | null) || null);
+}
+
+export async function updateHomepageContent(input: Partial<Record<keyof HomepageContent, unknown>>) {
+  const validation = normalizeHomepageContentInput(input);
+  if (!validation.ok) throw new Error(validation.error);
+
+  const { data, error } = await supabase
+    .from("homepage_content")
+    .upsert(homepageContentRow(validation.content), { onConflict: "id" })
+    .select(
+      "id, hero_image_url, hero_kicker, hero_title, hero_subtitle, primary_cta_label, primary_cta_href, secondary_cta_label, secondary_cta_href, feature_1_text, feature_2_text, feature_3_text, updated_at"
+    )
+    .single();
+
+  fail("upsert homepage_content", error);
+  return mapHomepageContent(data as DbHomepageContent);
 }
 
 function ensureVariantIds(product: Product) {

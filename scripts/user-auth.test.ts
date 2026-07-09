@@ -7,6 +7,7 @@ import {
   requireUserFromSession,
   verifySessionToken
 } from "../src/lib/auth";
+import { resolveLoginRedirect, resolveRegisterRedirect } from "../src/lib/auth-redirects";
 import { hashPassword, toSafeUser, verifyPassword } from "../src/lib/user-auth";
 
 const user = {
@@ -78,6 +79,27 @@ async function main() {
   const forbidden = authErrorResponse(() => requireAdminFromSession(toSafeUser(user)));
   assert.equal(forbidden.status, 403);
   assert.deepEqual(await forbidden.json(), { error: "Admin access required." });
+}
+
+{
+  const customerUser = toSafeUser(user);
+  const adminUser = { ...customerUser, role: "admin" as const };
+
+  assert.equal(resolveLoginRedirect(null, customerUser), "/account");
+  assert.equal(resolveLoginRedirect(null, adminUser), "/admin");
+  assert.equal(resolveLoginRedirect("/checkout", customerUser), "/checkout");
+  assert.equal(resolveLoginRedirect("/account", customerUser), "/account");
+  assert.equal(resolveLoginRedirect("/admin", customerUser), "/account");
+  assert.equal(resolveLoginRedirect("/admin", adminUser), "/admin");
+  assert.equal(resolveLoginRedirect("https://example.com", customerUser), "/account");
+  assert.equal(resolveLoginRedirect("//example.com", adminUser), "/admin");
+
+  assert.equal(resolveRegisterRedirect(null, customerUser), "/account");
+  assert.equal(resolveRegisterRedirect("/checkout", customerUser), "/checkout");
+  assert.equal(resolveRegisterRedirect("/account", customerUser), "/account");
+  assert.equal(resolveRegisterRedirect("/admin", customerUser), "/account");
+  assert.equal(resolveRegisterRedirect("https://example.com", customerUser), "/account");
+  assert.equal(resolveRegisterRedirect("//example.com", customerUser), "/account");
 }
 
 console.log("user auth tests passed");

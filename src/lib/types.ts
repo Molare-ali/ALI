@@ -84,6 +84,20 @@ export type StoreSettings = {
   snapchatLink: string;
 };
 
+export type HomepageContent = {
+  heroImageUrl: string;
+  heroKicker: string;
+  heroTitle: string;
+  heroSubtitle: string;
+  primaryCtaLabel: string;
+  primaryCtaHref: string;
+  secondaryCtaLabel: string;
+  secondaryCtaHref: string;
+  feature1Text: string;
+  feature2Text: string;
+  feature3Text: string;
+};
+
 export type StoreData = {
   products: Product[];
   categories: Category[];

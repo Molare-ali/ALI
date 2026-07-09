@@ -1,6 +1,9 @@
 import { readData } from "@/lib/db";
 import { ProductCard } from "@/components/ProductCard";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function ShopPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
   const { products, categories } = await readData();
   const { category } = await searchParams;

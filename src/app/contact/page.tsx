@@ -2,6 +2,9 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import { readData } from "@/lib/db";
 import { SocialLinks } from "@/components/SocialLinks";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function ContactPage() {
   const { settings } = await readData();
 

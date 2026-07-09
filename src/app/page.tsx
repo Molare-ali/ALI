@@ -5,6 +5,9 @@ import { ProductCard } from "@/components/ProductCard";
 import { Button } from "@/components/Button";
 import { Reveal } from "@/components/Reveal";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 const defaultHeroImageUrl = "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=1800&q=85";
 
 export default async function HomePage() {
